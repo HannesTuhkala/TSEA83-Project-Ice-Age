@@ -7,17 +7,16 @@ entity cpu is
 		clk: in std_logic;
 		a1 : in ???;
 		a2 : out ???);
-
-end cpu;;
+end cpu;
 
 architecture behavioral of cpu is
 	
-	-- Deklaration av ett dubbelportat block-RAM
-	-- med 512 adresser av 32 bitars bredd.
+	-- Declaration of a doubleported block-RAM
+	-- with 512 addresses of 32 bits width.
 	type ram_t is array(0 to 511) of
 		std_logic_vector(31 downto 0);
 		
-	-- Nollställ alla bitar på alla adresser
+	-- Reset all bits on all adresses
 	signal ram : ram_t := (others => (others => '0'));
 	
 	-- port 1
@@ -32,27 +31,28 @@ architecture behavioral of cpu is
 	ce2 : in std_logic; -- Count enable flag for port 2
 	data2 : out std_logic_vector(31 downto 0)); -- Our instruction, which is 32 bits long.
 
-PROCESS(clk)
-BEGIN
-	if (rising_edge(clk)) then
-		
-		-- synkron skrivning/läsning port 1
-		if (ce1 = '0') then
-			if (rw1 = '0') then
-				ram(adress1) <= data1;
-			else 
-				data1 <= (adress1);
-			end if;
-		end if;
-		
-		-- synkron läsning port 2
-		if (ce2 = '0') then
-			if (rw2 = '0') then
-				data2 <= ram(adress2); -- Ev lägg till skrivning 
-			end if;
-		end if;
-	end if;
-END PROCESS;
+begin
 
+	-- Our program memory/Block RAM
+	PROCESS(clk)
+	BEGIN
+		if (rising_edge(clk)) then
+			-- synchronized read/write port 1
+			if (ce1 = '0') then
+				if (rw1 = '0') then
+					ram(adress1) <= data1;
+				else 
+					data1 <= (adress1);
+				end if;
+			end if;
+			
+			-- synchronized read port 2
+			if (ce2 = '0') then
+				if (rw2 = '0') then
+					data2 <= ram(adress2); -- Ev lägg till skrivning 
+				end if;
+			end if;
+		end if;
+	END PROCESS;
 
 end behavioral;
