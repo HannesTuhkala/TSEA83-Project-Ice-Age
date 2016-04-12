@@ -2,21 +2,24 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity cpu
+entity cpu is
 	port (
-		a1 : in ???
+		clk: in std_logic;
+		a1 : in ???;
 		a2 : out ???);
-end CPU;
+
+end cpu;;
 
 architecture behavioral of cpu is
-
-begin
-
-end behavioral;
-
-
-entity program_memory is
-	port (clk : in std_logic;
+	
+	-- Deklaration av ett dubbelportat block-RAM
+	-- med 512 adresser av 32 bitars bredd.
+	type ram_t is array(0 to 511) of
+		std_logic_vector(31 downto 0);
+		
+	-- Nollställ alla bitar på alla adresser
+	signal ram : ram_t := (others => (others => '0'));
+	
 	-- port 1
 	adress1 : in std_logic_vector(8 downto 0);
 	rw1 : in std_logic; -- Read/Write flag for port 1
@@ -28,18 +31,6 @@ entity program_memory is
 	rw2 : in std_logic; -- Read/Write flag for port 2
 	ce2 : in std_logic; -- Count enable flag for port 2
 	data2 : out std_logic_vector(31 downto 0)); -- Our instruction, which is 32 bits long.
-end program_memory;
-
-architecture behavioral of program_memory is
-	-- Deklaration av ett dubbelportat block-RAM
-	-- med 512 adresser av 32 bitars bredd.
-	type ram_t is array(0 to 511) of
-		std_logic_vector(31 downto 0);
-		
-	-- Nollställ alla bitar på alla adresser
-	signal ram : ram_t := (others => (others => '0'));
-	
-begin
 
 PROCESS(clk)
 BEGIN
@@ -57,9 +48,11 @@ BEGIN
 		-- synkron läsning port 2
 		if (ce2 = '0') then
 			if (rw2 = '0') then
-				data2 <= ram(adress2);
+				data2 <= ram(adress2); -- Ev lägg till skrivning 
 			end if;
 		end if;
 	end if;
 END PROCESS;
+
+
 end behavioral;
