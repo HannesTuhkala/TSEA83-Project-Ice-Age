@@ -22,10 +22,11 @@ architecture behavioral of cpu is
 	-- Reset all bits on all adresses
 	signal pm : pm_t := (others => (others => '0'));
 	
-	-- port 1
-	signal adress1 : std_logic_vector(8 downto 0);
-	signal re1 : std_logic; -- Read flag
-	signal data1 : std_logic_vector(31 downto 0); -- Our instruction, which is 32 bits long.
+	-- NOTE: adress == pc
+	signal adress : std_logic_vector(8 downto 0) := (others => '0'); -- Our adress, which is 9 bits long.
+	
+	-- NOTE: pm_instruction is the current instruction taken from program memory
+	signal pm_instruction : std_logic_vector(31 downto 0); -- Our instruction, which is 32 bits long.
 	--------------------------------------------------
 	--------------END OF PROGRAM MEMORY---------------
 	--------------------------------------------------
@@ -33,12 +34,27 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	--------------PROGRAM COUNTER---------------------
 	--------------------------------------------------
-	signal PC : std_logic_vector(8 downto 0);
-	signal PC1 : std_logic_vector(8 downto 0);
-	signal PC2 : std_logic_vector(8 downto 0);
+	signal PC : std_logic_vector(8 downto 0) := (others => '0');
+	signal PC1 : std_logic_vector(8 downto 0) := (others => '0');
+	signal PC2 : std_logic_vector(8 downto 0) := (others => '0');
 	--------------------------------------------------
 	------------END OF PROGRAM COUNTER----------------
 	--------------------------------------------------
+
+	-------------------------------------------------
+	--------------INTERNAL REGISTERS-----------------
+	-------------------------------------------------
+	signal IR1 : std_logic_vector(31 downto 0) := (others => '0');
+	signal IR2 : std_logic_vector(31 downto 0) := (others => '0');
+	signal IR3 : std_logic_vector(31 downto 0) := (others => '0');
+	signal IR4 : std_logic_vector(31 downto 0) := (others => '0');
+	signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
+	signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
+	
+	alias IR1_op : std_logic_vector(3 downto 0) is IR1(3 downto 0);
+	-------------------------------------------------
+	------------END OF INTERNAL REGISTERS------------
+	-------------------------------------------------
 
 begin
 
@@ -46,10 +62,36 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			data1 <= (adress1);
+			pm_instruction <= (adress);
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
+
+	----- Jump logic
+	-------- MUX 1 --------
+	with ? select
+	mux_1 <= pm_instruction when ?,
+			"nop instruction" when others;
+	------- END MUX 1 -------
+
+	----- Stall logic
+	-------- MUX 2 --------
+	with ? select 
+	mux_2 <= ir1 when ?,
+			"nop instruction" when others;
+	------- END MUX 2 -------
+
+	--------- Internal Registers -------
+	PROCESS(clk)
+	BEGIN
+		if (rising_edge(clk)) then
+			IR4 <= IR3;
+			IR3 <= IR2;
+			IR2 <= mux_2;
+			IR1 <= mux_1; 
+		end if;
+	END PROCESS;
+	------- END Internal Registers -------	
 
 	-------- Program Counter --------
 	
