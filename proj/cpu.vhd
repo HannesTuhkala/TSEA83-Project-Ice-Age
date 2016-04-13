@@ -14,7 +14,7 @@ architecture behavioral of cpu is
 	----------------------------------------------------
 	---------------------PROGRAM_MEMORY-----------------
 	----------------------------------------------------
-	-- Declaration of a doubleported block-RAM
+	-- Declaration of a block-RAM
 	-- with 512 addresses of 32 bits width.
 	type pm_t is array(0 to 511) of
 		std_logic_vector(31 downto 0);
@@ -24,18 +24,20 @@ architecture behavioral of cpu is
 	
 	-- port 1
 	signal adress1 : std_logic_vector(8 downto 0);
-	signal rw1 : std_logic; -- Read/Write flag for port 1
-	signal ce1 : std_logic; -- Count enable flag for port 1
+	signal re1 : std_logic; -- Read flag
 	signal data1 : std_logic_vector(31 downto 0); -- Our instruction, which is 32 bits long.
-	
-	-- port 2
-	signal adress2 : std_logic_vector(8 downto 0);
-	signal rw2 : std_logic; -- Read/Write flag for port 2
-	signal ce2 : std_logic; -- Count enable flag for port 2
-	signal data2 : std_logic_vector(31 downto 0)); -- Our instruction, which is 32 bits long.
-
 	--------------------------------------------------
 	--------------END OF PROGRAM MEMORY---------------
+	--------------------------------------------------
+
+	--------------------------------------------------
+	--------------PROGRAM COUNTER---------------------
+	--------------------------------------------------
+	signal PC : std_logic_vector(8 downto 0);
+	signal PC1 : std_logic_vector(8 downto 0);
+	signal PC2 : std_logic_vector(8 downto 0);
+	--------------------------------------------------
+	------------END OF PROGRAM COUNTER----------------
 	--------------------------------------------------
 
 begin
@@ -44,12 +46,14 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			if (re1 = '0') then
-				data1 <= (adress1);
-			end if;
+			data1 <= (adress1);
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
+
+	-------- Program Counter --------
+	
+	-------- END Program Counter ------
 
 
 end behavioral;
