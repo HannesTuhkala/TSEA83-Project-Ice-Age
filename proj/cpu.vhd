@@ -11,6 +11,9 @@ end cpu;
 
 architecture behavioral of cpu is
 	
+	----------------------------------------------------
+	---------------------PROGRAM_MEMORY-----------------
+	----------------------------------------------------
 	-- Declaration of a doubleported block-RAM
 	-- with 512 addresses of 32 bits width.
 	type ram_t is array(0 to 511) of
@@ -31,9 +34,13 @@ architecture behavioral of cpu is
 	ce2 : in std_logic; -- Count enable flag for port 2
 	data2 : out std_logic_vector(31 downto 0)); -- Our instruction, which is 32 bits long.
 
+	--------------------------------------------------
+	--------------END OF PROGRAM MEMORY---------------
+	--------------------------------------------------
+
 begin
 
-	-- Our program memory/Block RAM
+	-------- Program Memory ---------
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
@@ -54,5 +61,7 @@ begin
 			end if;
 		end if;
 	END PROCESS;
+	-------- END Program Memory -------
+
 
 end behavioral;
