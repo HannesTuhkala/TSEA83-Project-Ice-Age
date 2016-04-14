@@ -62,7 +62,7 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			pm_instruction <= (adress);
+			pm_instruction <= pm(adress);
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
