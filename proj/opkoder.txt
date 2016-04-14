@@ -1,0 +1,13 @@
+0000 Nop
+0001 Load
+0010 Store
+0011 Add
+0100 Sub
+1011 branch
+1111 Halt
+0110 Shift
+1010 Branch on Flag - z:n
+1001 Set flag - z:n
+1000 Comp
+0101 Mult
+0111 Col - collision
