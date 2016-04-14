@@ -18,10 +18,11 @@ architecture behavioral of cpu is
 	-- with 512 addresses of 32 bits width.
 	type pm_t is array(0 to 511) of
 		std_logic_vector(31 downto 0);
-		
+	type reg_t is array(0 to 31) of 
+		std_logic_vector(0 downto 7);		
 	-- Reset all bits on all adresses
 	signal pm : pm_t := (others => (others => '0'));
-	
+	signal reg : reg_t :=(others => (others => '0'));
 	-- NOTE: adress == pc
 	signal adress : std_logic_vector(8 downto 0) := (others => '0'); -- Our adress, which is 9 bits long.
 	
@@ -40,6 +41,16 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	------------END OF PROGRAM COUNTER----------------
 	--------------------------------------------------
+	-------------INTERNAL SIGNALS-------------------
+	signal reg_enable : std_logic_vector(1 downto 0) := (others =>'0');
+	signal utA : std_logic_vector(8 downto 0) :=(others=> '0');
+	signal utB : std_logic_vector(8 downto 0) :=(others => '0');
+
+
+
+
+
+
 
 	-------------------------------------------------
 	--------------INTERNAL REGISTERS-----------------
@@ -53,15 +64,45 @@ architecture behavioral of cpu is
 	
 	-------------------ALIAS-------------------------
 	alias IR1_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
-	alias IR2_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
-	alias IR3_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
-	alias IR4_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
+	alias IR2_op : std_logic_vector(3 downto 0) is IR2(31 downto 28);
+	alias IR3_op : std_logic_vector(3 downto 0) is IR3(31 downto 28);
+	
+	alias IR1_am1 : std_logic_vector(1 downto 0) is IR1(27 downto 26);
+	alias IR2_am1 : std_logic_vector(1 downto 0) is IR2(27 downto 26);
+	alias IR3_am1 : std_logic_vector(1 downto 0) is IR3(27 downto 26);
+	
+	alias IR1_term1 : std_logic_vector(7 downto 0) is IR1(25 downto 18);
+	alias IR2_term1 : std_logic_vector(7 downto 0) is IR2(25 downto 18);
+	alias IR3_term1 : std_logic_vector(7 downto 0) is IR3(25 downto 18);
+
+	alias IR1_am2 : std_logic_vector(1 downto 0) is IR1(17 downto 16);
+	alias IR2_am2 : std_logic_vector(1 downto 0) is IR2(17 downto 16);
+	alias IR3_am2 : std_logic_vector(1 downto 0) is IR3(17 downto 16);
+
+	alias IR1_term2 : std_logic_vector(7 downto 0) is IR1(15 downto 8);
+	alias IR2_term2 : std_logic_vector(7 downto 0) is IR2(15 downto 8);
+	alias IR3_term2 : std_logic_vector(7 downto 0) is IR3(15 downto 8);
+
+	alias IR1_fA : std_logic_vector(7 downto 0) is IR1(7 downto 0);
+	alias IR2_fA : std_logic_vector(7 downto 0) is IR2(7 downto 0);
+	alias IR3_fA : std_logic_vector(7 downto 0) is IR3(7 downto 0);
+
 	-------------------------------------------------
 	------------END OF INTERNAL REGISTERS------------
 	-------------------------------------------------
 
-begin
 
+
+
+	----------------DATAREGISTER-------------------------------
+	-----------------------------------------------------------
+begin
+	PROCESS(clk)
+	begin
+		if (rising_edge(clk)) then
+			if(IR			
+		end if;
+	END PROCESS;
 	-------- Program Memory ---------
 	PROCESS(clk)
 	BEGIN
