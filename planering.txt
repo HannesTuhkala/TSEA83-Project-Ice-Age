@@ -1,0 +1,23 @@
+
+Planering TSEA83 Projekt.
+
+CPU:
+	Mål 1: klart 18 april: 
+	* Instruktions hantering
+	* Alu ; Opererationer
+	* Program minne
+	* Stall logik
+Grafik: 25 april:
+	Mål 2: Få bild med färg.
+	* Tileminne
+	* ev"Bildminne"
+	* Pixelväljare
+	* Se Lab 4
+Assembler: 2 maj:
+	* Instruktions bibliotek
+	* Compilator
+Inputenheter:
+	* Joystick
+	* Styrning
+	* Player states
+

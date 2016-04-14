@@ -11,3 +11,54 @@
 1000 Comp
 0101 Mult
 0111 Col - collision
+
+31           28 27        26 25        24           17 16         15            8 7              0
+[4 bitar opkod] [2 bitar am] [1 bit f1][8 bitar term1] [1 bit f2] [8 bitar term2] [8 bitar utaddr]
+
+Tolkning am om ej angivet va (vanlig addresserning):
+am = 00 -> direkt angivet värde
+am = 01 -> register(term)
+am = 10 -> dataminne(term)
+
+0000 Nop
+utför ingen operation
+
+0001 Load
+lagra term1 (va) i register(utaddr)
+
+0010 Store
+lagra term1 (va) i dataminne(utaddr)
+
+0011 Add
+addera term1(va) med term2 (va), lagra i register(utaddr)
+
+0100 Sub
+subtrahera term1(va) med term2 (va), lagra i register(utaddr)
+sätt z hög om res = 0,  sätt N hög om res < 0, annars negativa
+
+0101 Mult
+multiplicera term1(va) med term2 (va), lagra i register(utaddr)
+
+0110 Shift
+shifta term1(am) höger om f2 = '1', annars vänster, med term2(direkt addresserat) steg. Lagrar i register(utaddr) 
+
+0111 Col - collision
+sätt z-flaggan hög om nästa är sten, annars låg.
+sätt n-flaggan hög om nuvarande är mark, annars låg.
+
+1000 Comp
+som Sub, men lagra inget värde i register
+
+1001 Set flag - z:n
+om f1 = 1, sätt z <= f2
+om f1 = 0, sätt n <= f2
+
+1010 Branch on Flag - z:n
+om ((f1 = 1 && z = 1) || (f1 = 0 && n = 1))
+	branch (dvs pc = pc + term1 (direkt addressering))
+
+	1011 branch
+	pc = pc + term1 (direkt addressering
+	
+	1111 Halt 
+	stop execution)

@@ -51,7 +51,11 @@ architecture behavioral of cpu is
 	signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
 	
-	alias IR1_op : std_logic_vector(3 downto 0) is IR1(3 downto 0);
+	-------------------ALIAS-------------------------
+	alias IR1_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
+	alias IR2_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
+	alias IR3_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
+	alias IR4_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
 	-------------------------------------------------
 	------------END OF INTERNAL REGISTERS------------
 	-------------------------------------------------
