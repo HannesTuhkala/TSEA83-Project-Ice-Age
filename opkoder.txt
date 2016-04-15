@@ -1,6 +1,6 @@
 ﻿0000 Nop
 0001 move
-0010 deprecated
+0010 deprecated -- unused, add AND func. or such?
 0011 Add
 0100 Sub
 0101 Mult
@@ -11,6 +11,7 @@
 1010 Branch on Flag - z:n
 1011 branch
 1111 Halt
+
 31           28 27          26 25           18 17         16  15            8 7              0
 [4 bitar opkod] [2 bitar am1 ] [8 bitar term1] [2 bitar am2]  [8 bitar term2] [8 bitar utaddr]
 
@@ -26,9 +27,6 @@ utför ingen operation
 --0001 move	
 lagra term2 till register(utaddr)
 
-0010 deprecated
-no longer has a function
-
 0011 Add
 addera reg(term1) med term2 (va), lagra i reg(utaddr)
 
@@ -43,6 +41,8 @@ multiplicera reg(term1) med term2 (va), lagra i reg(utaddr)
 shifta reg(term1) höger om am2(1) = '1', annars vänster, med term2 steg. Lagrar i reg(utaddr) 
 
 0111 Col - collision
+Tar indata term1 = (4 bitar X coord.  | 4 bitar Y coord)
+	   term2 = (2 bitar dir, 00 = up, 01 = ner, 10 = vänster, 11 = höger)
 sätt z-flaggan hög om nästa är sten, annars låg.
 sätt n-flaggan hög om nuvarande är mark, annars låg.
 
