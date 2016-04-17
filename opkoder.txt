@@ -38,7 +38,7 @@ sätt z hög om res = 0,  sätt N hög om res < 0, annars negativa
 multiplicera reg(term1) med term2 (va), lagra i reg(utaddr)
 
 0110 Shift
-shifta reg(term1) höger om am2(1) = '1', annars vänster, med term2 steg. Lagrar i reg(utaddr) 
+shifta reg(term1) höger om am2(1) = '1', annars vänster, med 1 steg. Lagrar i reg(utaddr) 
 
 0111 Col - collision
 Tar indata term1 = (4 bitar X coord.  | 4 bitar Y coord)
