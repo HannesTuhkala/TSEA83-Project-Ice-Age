@@ -41,24 +41,6 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 
 	--------------------------------------------------
-	------------------DATA MEMORY---------------------
-	--------------------------------------------------
-	-- Declaration of a block-RAM
-	-- with 256 addresses of 2 bits width.
-	type dm_t is array(0 to 255) of
-		std_logic_vector(1 downto 0);
-	
-	-- Reset all bits on addresses
-	signal dm : dm_t := (others => (others => '0'));
-
-	signal dm_address : std_logic_vector(7 downto 0) := (others => '0');
-	signal dm_out : std_logic_vector(1 downto 0);
-	signal dm_in : std_logic_vector(7 downto 0);
-	--------------------------------------------------
-	---------------END OF DATA MEMORY-----------------
-	--------------------------------------------------
-
-	--------------------------------------------------
 	-------------------REGISTER-----------------------
 	--------------------------------------------------
 	type reg_t is array(0 to 31) of 
@@ -198,17 +180,5 @@ begin
 	END PROCESS;
 	-------- END Program Counter ------
 
-	---------- Data Memory ------------
-	PROCESS(clk)
-	BEGIN
-		if (rising_edge(clk)) then
-			if (IR3_op = "0010") then
-				dm(dm_address) <= dm_in;
-			else
-				dm_out <= dm(dm_address);
-			end if;
-		end if;
-	END PROCESS;
-	-------- END Data Memory ---------
 
 end behavioral;
