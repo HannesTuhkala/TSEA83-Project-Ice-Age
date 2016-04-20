@@ -63,4 +63,4 @@ om ((am2(0) = 0 && z = 1) || (am2(0) = 1 && n = 1))
 pc = pc + term1 (direkt addressering)
 	
 1111 Halt 
-stop execution)
+stop execution -- currently not implemented.
