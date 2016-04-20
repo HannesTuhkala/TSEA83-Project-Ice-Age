@@ -7,8 +7,8 @@ entity cpu is
 		clk: in std_logic;
 		a1 : in ???;
 		a2 : out ???;
-		playerXY : out std_logic_vector(7 downto 0)--Player coordinate
-		playerTransition : out std_logic_vector(7 downto 0)--Used to output how far the player has moved between two tiles. Exact data layout tbd
+		playerXY : out std_logic_vector(7 downto 0)-- Player coordinate
+		playerTransition : out std_logic_vector(7 downto 0)-- Used to output how far the player has moved between two tiles. Exact data layout tbd
 		joystick: in std_logic_vector(7 downto 0)
 end cpu;
 
@@ -29,18 +29,24 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	--------------END OF PROGRAM MEMORY---------------
 	--------------------------------------------------
-	-----------------ALU-----------------------------
-		        ----tile memory----
+	
+	--------------------------------------------------
+	---------------------ALU--------------------------
+	--------------------------------------------------
+		        ----Tile Memory----
         	--tm is arranged as: highest 4 bits denote column, 
         	--lowest 4 denote row. "1-" denotes ground, "01" 
 		--denotes rock, "00" denotes ice.
         type tm_t is array(0 to 255) of 
-	std_logic_vector(7 downto 0); 
+			std_logic_vector(7 downto 0); 
 	signal tm : tm_t := (others => (others => '0')); 
-	----flags----   
-	signal z : std_logic := '0'; 
-	signal n : std_logic := '0';     
-	--------------END-OF-ALU-------------------------
+	----FLAGS----   
+	signal z : std_logic := '0';
+	signal n : std_logic := '0';
+	--------------------------------------------------
+	--------------END OF ALU--------------------------
+	--------------------------------------------------
+	
 	--------------------------------------------------
 	--------------PROGRAM COUNTER---------------------
 	--------------------------------------------------
@@ -98,14 +104,9 @@ architecture behavioral of cpu is
 	------------END OF INTERNAL REGISTERS------------
 	-------------------------------------------------
 
-
-
-	-------------------------------------------------
-	----------------DATAREGISTER---------------------
-	-------------------------------------------------
 begin
 	
-	--------------REGISTER-----------------
+	-------------- REGISTER -----------------
 	PROCESS(clk)
 	begin
 		if (rising_edge(clk)) then
@@ -122,7 +123,7 @@ begin
 		end if;
 	END PROCESS;
 
-	-------------END Register--------------
+	------------- END Register --------------
 
 	-------- Program Memory ---------
 	PROCESS(clk)
@@ -137,14 +138,14 @@ begin
 	-------- MUX 1 --------
 	with ? select
 	mux_1 <= pm_instruction when ?,
-			"nop instruction" when others;
+			"0000" when others;
 	------- END MUX 1 -------
 
 	----- Stall logic
 	-------- MUX 2 --------
 	with ? select 
 	mux_2 <= ir1 when ?,
-			"nop instruction" when others;
+			"0000" when others;
 	------- END MUX 2 -------
 
 	--------- Internal Registers -------
@@ -163,11 +164,7 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			-- If IR1_op code is equal to the OP code for branch.
-<<<<<<< HEAD
-			if (IR1_op = "1011" || (IR1_op = "1010" && ((IR1_am2(0) = '0' && z = '1')||(IR1_am2(0) = '1' && n = '1')))) then
-=======
 			if (IR1_op(3 downto 1) = "101") then  --lägg till case branch on flag--
->>>>>>> origin/master
 				branch <= '1';
 				PC2 <= PC1 + IR1(25 downto 17); -- calculate next address in case of branch
 			else
@@ -183,17 +180,16 @@ begin
 					PC_out <= PC2;
 				else
 					PC_out <= PC + 1;
-					PC <= PC + 1; -- may want to change the number to increment by, depening on how pm is implemented
+					PC <= PC + 1; -- may want to change the number to increment by, depending on how pm is implemented
 				end if;
 			end if;
 		end if;
 	END PROCESS;
 	-------- END Program Counter ------
-	---------------ALU------------------
-<<<<<<< HEAD
 
-	process(clk)
-	begin 
+	--------------- ALU ------------------
+	PROCESS(clk)
+	BEGIN
 		if (rising_edge(clk)) then
 			if (IR2_op = "0001") then	-- Move
 				res <= B2;
@@ -203,13 +199,15 @@ begin
 				res <= A2 + B2;
 			end if;
 			
-			if (IR2_op = "0100" || IR2_op = "1000") then   --Sub or Comp; differed by whether register stores value
+			if (IR2_op = "0100" || IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value
 				res <= A2 - B2;
+				
 				if(A2 < B2) then 
 					n <= '1';
 				else 
 					n <= '0';
 				end if;
+
 				if(A2 = B2) then
 					z <= '1';
 				else 
@@ -221,10 +219,10 @@ begin
 				res <= A2 * B2;
 			end if;
 			
-			if (IR2_op = "0110") then   --Shift
+			if (IR2_op = "0110") then   -- Shift
 				if (am2(1) = '1') then 	-- Right Shift
 					res(6 downto 0) <= A2(7 downto 1);
-					if (am2(0) = '1')then --arithmethric shift
+					if (am2(0) = '1')then -- arithmethric shift
 						res(7) <= A2(7);
 					else 
 						res(7) <= '0';
@@ -235,87 +233,27 @@ begin
 				end if;
 			end if;
 			
-			if (IR2_op = "0111") then   --Collision detector
+			if (IR2_op = "0111") then   -- Collision detector
 				case B2(1 downto 0) is	-- detect rocks
 					when "00" => z <= tm(A2 - 1)(0);
 					when "01" => z <= tm(A2 + 1)(0);
 					when "10" => z <= tm(A2 - 16)(0);
 					when "11" => z <= tm(A2 + 16)(0);
 				end case;
-				n <= tm(A2)(1); --detect ground
+				n <= tm(A2)(1); -- detect ground
 			end if;
 
-=======
-
-	process(clk)
-	begin 
-		if (rising_edge(clk)) then
-			if (IR2_op = "0001") then	-- Move
-				res <= B2;
-			end if;
-			
-			if (IR2_op = "0011") then	--Add
-				res <= A2 + B2;
-			end if;
-			
-			if (IR2_op = "0100" || IR2_op = "1000") then   --Sub or Comp; differed by whether register stores value
-				res <= A2 - B2;
-				if(A2 < B2) then 
-					n <= '1';
-				else 
-					n <= '0';
-				end if;
-				if(A2 = B2) then
-					z <= '1';
-				else 
-					z <= '0';
-				end if; 
-			end if;
-
-			if (IR2_op = "0101") then   --Mult
-				res <= A2 * B2;
-			end if;
-			
-			if (IR2_op = "0110") then   --Shift
-				if (am2(1) = '1') then 	-- Right Shift
-					res(6 downto 0) <= A2(7 downto 1);
-					if (am2(0) = '1')then --arithmethric shift
-						res(7) <= A2(7);
-					else 
-						res(7) <= '0';
-					end if;
-				else 
-					res(7 downto 1) <= A2(6 downto 0);
-					res(0 <= '0');
-				end if;
-			end if;
-			
-			if (IR2_op = "0111") then   --Collision detector
-				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= tm(A2 - 1)(0);
-					when "01" => z <= tm(A2 + 1)(0);
-					when "10" => z <= tm(A2 - 16)(0);
-					when "11" => z <= tm(A2 + 16)(0);
-				end case;
-				n <= tm(A2)(1); --detect ground
-			end if;
-
->>>>>>> origin/master
-			if (IR2_op = "1001") then   --set flag
-				if(am2(1) = '1') then
+			if (IR2_op = "1001") then   -- set flag
+				if (am2(1) = '1') then
 					z <= am2(0);
 				else 
-					n z= am2(0);
+					n <= am2(0);
 				end if;
 			end if;
-			--branch, branch on flag, nop and halt does not affect alu
+			-- branch, branch on flag, nop and halt does not affect alu
 			
-			tile <= tm(tm_addres);	--outputs requested pixel to pixel selector
+			tile <= tm(tm_addres);	-- outputs requested pixel to pixel selector
 		end if;
-	end process;
-<<<<<<< HEAD
-end behavioral;
-=======
+	end PROCESS;
 	
 end behavioral;
->>>>>>> origin/master
