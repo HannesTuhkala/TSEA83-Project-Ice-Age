@@ -33,7 +33,7 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	---------------------ALU--------------------------
 	--------------------------------------------------
-		        ----Tile Memory----
+		        ----Map layout Memory----
         	--tm is arranged as: highest 4 bits denote column, 
         	--lowest 4 denote row. "1-" denotes ground, "01" 
 		--denotes rock, "00" denotes ice.
@@ -228,10 +228,10 @@ begin
 			
 			if (IR2_op = "0111") then   -- Collision detector
 				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= tm(A2 - 1)(0);
-					when "01" => z <= tm(A2 + 1)(0);
-					when "10" => z <= tm(A2 - 16)(0);
-					when "11" => z <= tm(A2 + 16)(0);
+					when "00" => z <= tm(A2 - 16)(0);	--up
+					when "01" => z <= tm(A2 + 16)(0);	--down
+					when "10" => z <= tm(A2 - 1 )(0);	--left
+					when "11" => z <= tm(A2 + 1 )(0);	--right
 				end case;
 				n <= tm(A2)(1); -- detect ground
 			end if;
