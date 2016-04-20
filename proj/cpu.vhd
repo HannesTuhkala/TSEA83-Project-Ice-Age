@@ -105,7 +105,6 @@ architecture behavioral of cpu is
 	-------------------------------------------------
 
 begin
-	
 	-------------- REGISTER -----------------
 	PROCESS(clk)
 	begin
@@ -186,11 +185,6 @@ begin
 		end if;
 	END PROCESS;
 	-------- END Program Counter ------
-<<<<<<< HEAD
-	---------------ALU------------------
-<<<<<<< HEAD
-=======
->>>>>>> origin/master
 
 	--------------- ALU ------------------
 	PROCESS(clk)
@@ -247,70 +241,9 @@ begin
 				end case;
 				n <= tm(A2)(1); -- detect ground
 			end if;
-
-<<<<<<< HEAD
-=======
-
-	process(clk)
-	begin 
-		if (rising_edge(clk)) then
-			if (IR2_op = "0001") then	-- Move
-				res <= B2;
-			end if;
 			
-			if (IR2_op = "0011") then	--Add
-				res <= A2 + B2;
-			end if;
-			
-			if (IR2_op = "0100" || IR2_op = "1000") then   --Sub or Comp; differed by whether register stores value
-				res <= A2 - B2;
-				if(A2 < B2) then 
-					n <= '1';
-				else 
-					n <= '0';
-				end if;
-				if(A2 = B2) then
-					z <= '1';
-				else 
-					z <= '0';
-				end if; 
-			end if;
-
-			if (IR2_op = "0101") then   --Mult
-				res <= A2 * B2;
-			end if;
-			
-			if (IR2_op = "0110") then   --Shift
-				if (am2(1) = '1') then 	-- Right Shift
-					res(6 downto 0) <= A2(7 downto 1);
-					if (am2(0) = '1')then --arithmethric shift
-						res(7) <= A2(7);
-					else 
-						res(7) <= '0';
-					end if;
-				else 
-					res(7 downto 1) <= A2(6 downto 0);
-					res(0 <= '0');
-				end if;
-			end if;
-			
-			if (IR2_op = "0111") then   --Collision detector
-				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= tm(A2 - 1)(0);
-					when "01" => z <= tm(A2 + 1)(0);
-					when "10" => z <= tm(A2 - 16)(0);
-					when "11" => z <= tm(A2 + 16)(0);
-				end case;
-				n <= tm(A2)(1); --detect ground
-			end if;
-
->>>>>>> origin/master
-			if (IR2_op = "1001") then   --set flag
-				if(am2(1) = '1') then
-=======
 			if (IR2_op = "1001") then   -- set flag
 				if (am2(1) = '1') then
->>>>>>> origin/master
 					z <= am2(0);
 				else 
 					n <= am2(0);
@@ -320,14 +253,6 @@ begin
 			
 			tile <= tm(tm_addres);	-- outputs requested pixel to pixel selector
 		end if;
-<<<<<<< HEAD
-	end process;
-<<<<<<< HEAD
-end behavioral;
-=======
-=======
 	end PROCESS;
->>>>>>> origin/master
 	
 end behavioral;
->>>>>>> origin/master
