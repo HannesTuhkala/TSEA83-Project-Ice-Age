@@ -162,12 +162,8 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			-- If IR1_op code is equal to the OP code for branch.
-<<<<<<< HEAD
+			-- If IR1_op code is equal to the OP code for branch or Branch on flag (and correct flag is set).
 			if (IR1_op = "1011" || (IR1_op = "1010" && ((IR1_am2(0) = '0' && z = '1')||(IR1_am2(0) = '1' && n = '1')))) then
-=======
-			if (IR1_op(3 downto 1) = "101") then  --lägg till case branch on flag--
->>>>>>> origin/master
 				branch <= '1';
 				PC2 <= PC1 + IR1(25 downto 17); -- calculate next address in case of branch
 			else
