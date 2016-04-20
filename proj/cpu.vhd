@@ -116,7 +116,6 @@ begin
 			if (IR3_op = "0001"|| IR3_op = "0011" || 
 			   IR3_op = "0100" || IR3_op = "0101" ||
 			   IR3_op = "0110") then
-
 				reg(IR3_fA) <= ALU_out;
 			end if;
 		end if;
