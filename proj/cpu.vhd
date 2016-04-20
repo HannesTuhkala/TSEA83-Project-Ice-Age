@@ -6,7 +6,10 @@ entity cpu is
 	port (
 		clk: in std_logic;
 		a1 : in ???;
-		a2 : out ???);
+		a2 : out ???;
+		playerXY : out std_logic_vector(7 downto 0)--Player coordinate
+		playerTransition : out std_logic_vector(7 downto 0)--Used to output how far the player has moved between two tiles. Exact data layout tbd
+		joystick: in std_logic_vector(7 downto 0)
 end cpu;
 
 architecture behavioral of cpu is
@@ -54,7 +57,7 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	-------------------REGISTER-----------------------
 	--------------------------------------------------
-	type reg_t is array(0 to 31) of 
+	type reg_t is array(0 to 63) of 
 		std_logic_vector(0 downto 7);		
 
 	signal reg : reg_t := (others => (others => '0'));
@@ -72,7 +75,6 @@ architecture behavioral of cpu is
 	signal IR1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal IR2 : std_logic_vector(31 downto 0) := (others => '0');
 	signal IR3 : std_logic_vector(31 downto 0) := (others => '0');
-	signal IR4 : std_logic_vector(31 downto 0) := (others => '0');
 	signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
 	
@@ -81,24 +83,15 @@ architecture behavioral of cpu is
 	alias IR2_op : std_logic_vector(3 downto 0) is IR2(31 downto 28);
 	alias IR3_op : std_logic_vector(3 downto 0) is IR3(31 downto 28);
 	
-	alias IR1_am1 : std_logic_vector(1 downto 0) is IR1(27 downto 26);
-	alias IR2_am1 : std_logic_vector(1 downto 0) is IR2(27 downto 26);
-	alias IR3_am1 : std_logic_vector(1 downto 0) is IR3(27 downto 26);
 	
 	alias IR1_term1 : std_logic_vector(7 downto 0) is IR1(25 downto 18);
-	alias IR2_term1 : std_logic_vector(7 downto 0) is IR2(25 downto 18);
-	alias IR3_term1 : std_logic_vector(7 downto 0) is IR3(25 downto 18);
 
 	alias IR1_am2 : std_logic_vector(1 downto 0) is IR1(17 downto 16);
 	alias IR2_am2 : std_logic_vector(1 downto 0) is IR2(17 downto 16);
 	alias IR3_am2 : std_logic_vector(1 downto 0) is IR3(17 downto 16);
 
 	alias IR1_term2 : std_logic_vector(7 downto 0) is IR1(15 downto 8);
-	alias IR2_term2 : std_logic_vector(7 downto 0) is IR2(15 downto 8);
-	alias IR3_term2 : std_logic_vector(7 downto 0) is IR3(15 downto 8);
 
-	alias IR1_fA : std_logic_vector(7 downto 0) is IR1(7 downto 0);
-	alias IR2_fA : std_logic_vector(7 downto 0) is IR2(7 downto 0);
 	alias IR3_fA : std_logic_vector(7 downto 0) is IR3(7 downto 0);
 
 	-------------------------------------------------
@@ -118,9 +111,12 @@ begin
 		if (rising_edge(clk)) then
 			utA <= reg(IR1_term1);
 			utB <= reg(IR1_term2);
+			playerX <= reg(valdadress);
+			reg(joystick adress) <= joystick
+			if (IR3_op = "0001"|| IR3_op = "0011" || 
+			   IR3_op = "0100" || IR3_op = "0101" ||
+			   IR3_op = "0110") then
 
-			-- ce1 = 1 då IR3_op är ett par speciella värden, vi får gå igenom vilka.
-			if (ce1 = '1') then
 				reg(IR3_fA) <= ALU_out;
 			end if;
 		end if;
@@ -155,7 +151,6 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			IR4 <= IR3;
 			IR3 <= IR2;
 			IR2 <= mux_2;
 			IR1 <= mux_1; 
@@ -168,7 +163,7 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			-- If IR1_op code is equal to the OP code for branch.
-			if (IR1_op(3 downto 1) = "101") then
+			if (IR1_op(3 downto 1) = "101") then  --lägg till case branch on flag--
 				branch <= '1';
 				PC2 <= PC1 + IR1(25 downto 17); -- calculate next address in case of branch
 			else
@@ -195,15 +190,15 @@ begin
 	process(clk)
 	begin 
 		if (rising_edge(clk)) then
-			if (op = "0001") then	-- Move
+			if (IR2_op = "0001") then	-- Move
 				res <= B2;
 			end if;
 			
-			if (op = "0011") then	--Add
+			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
 			end if;
 			
-			if (op = "0100" || op = "1000") then   --Sub or Comp; differed by whether register stores value
+			if (IR2_op = "0100" || IR2_op = "1000") then   --Sub or Comp; differed by whether register stores value
 				res <= A2 - B2;
 				if(A2 < B2) then 
 					n <= '1';
@@ -217,11 +212,11 @@ begin
 				end if; 
 			end if;
 
-			if (op = "0101") then   --Mult
+			if (IR2_op = "0101") then   --Mult
 				res <= A2 * B2;
 			end if;
 			
-			if (op = "0110") then   --Shift
+			if (IR2_op = "0110") then   --Shift
 				if (am2(1) = '1') then 	-- Right Shift
 					res(6 downto 0) <= A2(7 downto 1);
 					if (am2(0) = '1')then --arithmethric shift
@@ -235,7 +230,7 @@ begin
 				end if;
 			end if;
 			
-			if (op = "0111") then   --Collision detector
+			if (IR2_op = "0111") then   --Collision detector
 				case B2(1 downto 0) is	-- detect rocks
 					when "00" => z <= tm(A2 - 1)(0);
 					when "01" => z <= tm(A2 + 1)(0);
@@ -245,7 +240,7 @@ begin
 				n <= tm(A2)(1); --detect ground
 			end if;
 
-			if (op = "1001") then   --set flag
+			if (IR2_op = "1001") then   --set flag
 				if(am2(1) = '1') then
 					z <= am2(0);
 				else 
