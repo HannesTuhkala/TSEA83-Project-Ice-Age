@@ -19,25 +19,12 @@ entity VGA_lab is
 	 Vsync	                : out std_logic;                        -- vertical sync
 	 vgaRed	                : out	std_logic_vector(2 downto 0);   -- VGA red
 	 vgaGreen               : out std_logic_vector(2 downto 0);     -- VGA green
-	 vgaBlue	        : out std_logic_vector(2 downto 1);     -- VGA blue
-	 PS2KeyboardCLK	        : in std_logic;                         -- PS2 clock
-	 PS2KeyboardData        : in std_logic);                        -- PS2 data
+	 vgaBlue	        : out std_logic_vector(2 downto 1));     -- VGA blue
 end VGA_lab;
 
 
 -- architecture
 architecture Behavioral of VGA_lab is
-
-  -- PS2 keyboard encoder component
-  component KBD_ENC
-    port ( clk		        : in std_logic;				-- system clock
-	   rst		        : in std_logic;				-- reset signal
-	   PS2KeyboardCLK       : in std_logic;				-- PS2 clock
-	   PS2KeyboardData      : in std_logic;				-- PS2 data
-	   data		        : out std_logic_vector(7 downto 0);	-- tile data
-	   addr			: out unsigned(10 downto 0);	        -- tile address
-	   we			: out std_logic);	                -- write enable
-  end component;
 
   -- picture memory component
   component PICT_MEM
@@ -67,22 +54,14 @@ architecture Behavioral of VGA_lab is
            Vsync		: out std_logic);                       -- vertical sync
   end component;
 	
-  -- intermediate signals between KBD_ENC and PICT_MEM
-  signal        data_s	        : std_logic_vector(7 downto 0);         -- data
-  signal	addr_s	        : unsigned(10 downto 0);                -- address
-  signal	we_s		: std_logic;                            -- write enable
-	
   -- intermediate signals between PICT_MEM and VGA_MOTOR
   signal	data_out2_s     : std_logic_vector(7 downto 0);         -- data
   signal	addr2_s		: unsigned(10 downto 0);                -- address
 	
 begin
 
-  -- keyboard encoder component connection
-  U0 : KBD_ENC port map(clk=>clk, rst=>rst, PS2KeyboardCLK=>PS2KeyboardCLK, PS2KeyboardData=>PS2KeyboardData, data=>data_s, addr=>addr_s, we=>we_s);
-
   -- picture memory component connection
-  U1 : PICT_MEM port map(clk=>clk, we1=>we_s, data_in1=>data_s, addr1=>addr_s, we2=>'0', data_in2=>"00000000", data_out2=>data_out2_s, addr2=>addr2_s);
+  U1 : PICT_MEM port map(clk=>clk, we1=>'0', data_in1=>"00000000", addr1=>"00000000000", we2=>'0', data_in2=>"00000000", data_out2=>data_out2_s, addr2=>addr2_s);
 	
   -- VGA motor component connection
   U2 : VGA_MOTOR port map(clk=>clk, rst=>rst, data=>data_out2_s, addr=>addr2_s, vgaRed=>vgaRed, vgaGreen=>vgaGreen, vgaBlue=>vgaBlue, Hsync=>Hsync, Vsync=>Vsync);
