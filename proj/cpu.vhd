@@ -52,10 +52,8 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	signal stall : bit := '0';
 	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
-	signal PC_out : std_logic_vector(8 downto 0);
 	signal PC : std_logic_vector(8 downto 0) := (others => '0');
 	signal PC1 : std_logic_vector(8 downto 0) := (others => '0');
-	signal PC2 : std_logic_vector(8 downto 0) := (others => '0');
 	--------------------------------------------------
 	------------END OF PROGRAM COUNTER----------------
 	--------------------------------------------------
@@ -128,7 +126,7 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			pm_instruction <= pm(PC_out);
+			pm_instruction <= pm(PC);
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
@@ -165,21 +163,17 @@ begin
 			-- If IR1_op code is equal to the OP code for branch or Branch on flag (and correct flag is set).
 			if (IR1_op = "1011" || (IR1_op = "1010" && ((IR1_am2(0) = '0' && z = '1')||(IR1_am2(0) = '1' && n = '1')))) then
 				branch <= '1';
-				PC2 <= PC1 + IR1(25 downto 17); -- calculate next address in case of branch
 			else
 				branch <= '0';
-				PC2 <= PC1;
 			end if;
-
+		
 			PC1 <= PC; -- delay
 
 			if (stall = '0') then
 				if (branch = '1') then
-					PC <= PC2;
-					PC_out <= PC2;
+					PC <= PC1 + IR1(25 downto 17);
 				else
-					PC_out <= PC + 1;
-					PC <= PC + 1; -- may want to change the number to increment by, depending on how pm is implemented
+					PC <= PC + 1;
 				end if;
 			end if;
 		end if;
