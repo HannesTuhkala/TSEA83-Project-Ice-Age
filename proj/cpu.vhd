@@ -5,11 +5,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity cpu is
 	port (
 		clk: in std_logic;
-		a1 : in ???;
-		a2 : out ???;
-		playerXY : out std_logic_vector(7 downto 0)-- Player coordinate
-		playerTransition : out std_logic_vector(7 downto 0)-- Used to output how far the player has moved between two tiles. Exact data layout tbd
-		joystick: in std_logic_vector(7 downto 0)
+		playerXY : out std_logic_vector(7 downto 0);-- Player coordinate
+		playerTransition : out std_logic_vector(7 downto 0);    -- Used to output how far the player has moved between two tiles. Exact data layout tbd
+		joystick: in std_logic_vector(7 downto 0);
+		mapm_addres : in std_logic_vector(7 downto 0);		--Addres by which graphics component can select type of tile in tilemem
+		tile : out std-.logic_vector(1 downto 0); 		--Tile type at mapm_addres
+		
+
 end cpu;
 
 architecture behavioral of cpu is
@@ -18,7 +20,7 @@ architecture behavioral of cpu is
 	-------------------PROGRAM_MEMORY-------------------
 	----------------------------------------------------
 	-- Declaration of a block-RAM
-	-- with 512 addresses of 32 bits width.
+	-- with 512 addresses of 32 bits width. -2KB
 	type pm_t is array(0 to 511) of
 		std_logic_vector(31 downto 0);
 	-- Reset all bits on all addresses
@@ -34,12 +36,12 @@ architecture behavioral of cpu is
 	---------------------ALU--------------------------
 	--------------------------------------------------
 		        ----Map layout Memory----
-        	--tm is arranged as: highest 4 bits denote column, 
+        	--mapm is arranged as: highest 4 bits denote column, 
         	--lowest 4 denote row. "1-" denotes ground, "01" 
 		--denotes rock, "00" denotes ice.
-        type tm_t is array(0 to 255) of 
+        type mapm_t is array(0 to 255) of 
 			std_logic_vector(7 downto 0); 
-	signal tm : tm_t := (others => (others => '0')); 
+	signal mapm : mapm_t := (others => (others => '0')); 
 	----FLAGS----   
 	signal z : std_logic := '0';
 	signal n : std_logic := '0';
@@ -132,14 +134,14 @@ begin
 	-------- END Program Memory -------
 
 	----- Jump logic
-	-------- MUX 1 --------
+	-------- MUX 1 --------						--needs fix
 	with ? select
 	mux_1 <= pm_instruction when ?,
 			"0000" when others;
 	------- END MUX 1 -------
 
 	----- Stall logic
-	-------- MUX 2 --------
+	-------- MUX 2 --------						--needs fix
 	with ? select 
 	mux_2 <= ir1 when ?,
 			"0000" when others;
@@ -228,12 +230,12 @@ begin
 			
 			if (IR2_op = "0111") then   -- Collision detector
 				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= tm(A2 - 16)(0);	--up
-					when "01" => z <= tm(A2 + 16)(0);	--down
-					when "10" => z <= tm(A2 - 1 )(0);	--left
-					when "11" => z <= tm(A2 + 1 )(0);	--right
+					when "00" => z <= mapm(A2 - 16)(0);	--up
+					when "01" => z <= mapm(A2 + 16)(0);	--down
+					when "10" => z <= mapm(A2 - 1 )(0);	--left
+					when "11" => z <= mapm(A2 + 1 )(0);	--right
 				end case;
-				n <= tm(A2)(1); -- detect ground
+				n <= mapm(A2)(1); -- detect ground
 			end if;
 			
 			if (IR2_op = "1001") then   -- set flag
@@ -245,7 +247,7 @@ begin
 			end if;
 			-- branch, branch on flag, nop and halt does not affect alu
 			
-			tile <= tm(tm_addres);	-- outputs requested pixel to pixel selector
+			tile <= mapm(mapm_addres);	-- outputs requested pixel to pixel selector
 		end if;
 	end PROCESS;
 	
