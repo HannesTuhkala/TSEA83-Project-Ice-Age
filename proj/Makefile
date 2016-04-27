@@ -33,9 +33,9 @@ XILINX_INIT = source /sw/xilinx/ise_12.4i/ISE_DS/settings64.sh;
 PART=xc6slx16-3-csg324
 
 
-iceage.%: S=iceage.vhd
-iceage.%: T=iceage_tb.vhd
-iceage.%: U=Nexys3.ucf
+cpu.%: S=cpu.vhd
+cpu.%: T=cpu_tb.vhd
+cpu.%: U=cpu.ucf
 
 
 # Det här är ett exempel på hur man kan skriva en testbänk som är
