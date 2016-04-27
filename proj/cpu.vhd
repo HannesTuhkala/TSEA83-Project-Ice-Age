@@ -9,7 +9,7 @@ entity cpu is
 		playerTransition : out std_logic_vector(7 downto 0);    -- Used to output how far the player has moved between two tiles. Exact data layout tbd
 		joystick: in std_logic_vector(7 downto 0);
 		mapm_addres : in std_logic_vector(7 downto 0);		--Addres by which graphics component can select type of tile in tilemem
-		tile : out std-.logic_vector(1 downto 0); 		--Tile type at mapm_addres
+		tile : out std_logic_vector(1 downto 0); 		--Tile type at mapm_addres
 		
 
 end cpu;

@@ -10,8 +10,10 @@ architecture Behavioral of iceage_tb is
 
   component lab
       Port (
-  	    clk : in STD_LOGIC;
-	    joystick: in std_logic_vector(7 downto 0);
+  		clk : in STD_LOGIC;
+		rst : in std_logic;
+		joystick: in std_logic_vector(7 downto 0);
+      		
            );
   end component;
 

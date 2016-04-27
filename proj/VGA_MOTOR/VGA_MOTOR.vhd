@@ -11,7 +11,6 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 -- entity
 entity VGA_MOTOR is
   port ( clk			: in std_logic;
-	 data			: in std_logic_vector(7 downto 0);
 	 addr			: out unsigned(10 downto 0);
 	 rst			: in std_logic;
 	 vgaRed		        : out std_logic_vector(2 downto 0);
