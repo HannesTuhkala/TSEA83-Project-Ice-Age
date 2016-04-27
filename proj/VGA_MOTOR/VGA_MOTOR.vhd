@@ -37,7 +37,7 @@ architecture Behavioral of VGA_MOTOR is
 	
 
   -- Tile memory type
-  type ram_t is array (0 to 2047) of std_logic_vector(15 downto 0);
+  type ram_t is array (0 to 2047) of std_logic_vector(7 downto 0);
 
 -- Tile memory
   signal tileMem : ram_t := 
@@ -149,7 +149,7 @@ begin
   -- *                                 *
   -- ***********************************
   
-	Hsync <= '0' when Xpixel > 656 and Xpixel <= 752 else '1'; 
+	Hsync <= '0' when Xpixel > 655 and Xpixel < 752 else '1'; 
  
   -- Vertical pixel counter
 
@@ -170,7 +170,7 @@ begin
 			if Clk25 = '1' then
 				if (Xpixel = 799) then
 					Ypixel <= Ypixel + 1;
-				elsif (Ypixel = 521) then
+				elsif (Ypixel = 520) then
 					Ypixel <= (others => '0');
 				end if;
 			end if;
@@ -186,7 +186,7 @@ begin
   -- *                                 *
   -- ***********************************
 	
-	Vsync <= '0' when Ypixel = 492 or Ypixel = 493 else '1';
+	Vsync <= '0' when Ypixel > 489 and Ypixel < 492 else '1';
   
   -- Video blanking signal
 
@@ -197,7 +197,7 @@ begin
   -- *                                 *
   -- ***********************************
   
-	blank <= '1' when (Xpixel > 640 and Xpixel < 800) or (Ypixel > 480 and Ypixel < 521) else '0';	
+	blank <= '1' when (Xpixel > 255) or (Ypixel > 255) else '0';	
 
   
   -- Tile memory
@@ -219,7 +219,7 @@ begin
 
 
   -- Picture memory address composite
-  addr <= to_unsigned(20, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5);
+  addr <= to_unsigned(16, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5);
 
 
   -- VGA generation
