@@ -18,8 +18,7 @@ architecture behavioral of iceage is
 			playerXY : out std_logic_vector(7 downto 0);
 			playerTransition : out std_logic_vector(7 downto 0);
 			joystick : in std_logic_vector(7 downto 0);
-			tile : out std_logic_vector(1 downto 0);
-			 : out ???);
+			tile : out std_logic_vector(1 downto 0));
 	end component cpu;
 	
 	component VGA_MOTOR
@@ -36,7 +35,7 @@ architecture behavioral of iceage is
 	signal x : ???;
 	
 begin
-	U0 : cpu port map(clk=>clk, a2=>x);
-	U1 : graphic port map(b1=>x, b2=>c2, b3=>c3);
+	MAP1 : cpu port map(clk=>clk, joystick=>joystick);
+	MAP2 : VGA_MOTOR port map(Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue);
 
 end behavioral;
