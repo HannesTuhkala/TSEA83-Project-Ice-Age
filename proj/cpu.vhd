@@ -40,7 +40,8 @@ architecture behavioral of cpu is
 		--denotes rock, "00" denotes ice.
     type mapm_t is array(0 to 255) of 
 			std_logic_vector(7 downto 0); 
-	signal mapm : mapm_t := (others => (others => '0')); 
+	signal mapm : mapm_t := (others => (others => '0'));
+	
 	----FLAGS----   
 	signal z : std_logic := '0';
 	signal n : std_logic := '0';
@@ -49,7 +50,7 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	
 	--------------------------------------------------
-	--------------PROGRAM COUNTER---------------------
+	---------------PROGRAM COUNTER--------------------
 	--------------------------------------------------
 	signal stall : bit := '0';
 	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
@@ -63,7 +64,7 @@ architecture behavioral of cpu is
 	-------------------REGISTER-----------------------
 	--------------------------------------------------
 	type reg_t is array(0 to 63) of 
-	std_logic_vector(7 downto 0);	
+		std_logic_vector(7 downto 0);	
 
 	signal reg : reg_t := (others => (others => '0'));
 
@@ -71,11 +72,11 @@ architecture behavioral of cpu is
 	signal uta : std_logic_vector(7 downto 0) := (others => '0');
 	signal utb : std_logic_vector(7 downto 0) := (others => '0');
 	-------------------------------------------------
-	----------------end of register------------------
+	----------------End of register------------------
 	-------------------------------------------------
 
 	-------------------------------------------------
-	--------------internal registers-----------------
+	--------------Internal registers-----------------
 	-------------------------------------------------
 	signal ir1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal ir2 : std_logic_vector(31 downto 0) := (others => '0');
@@ -103,7 +104,13 @@ architecture behavioral of cpu is
 	------------END OF INTERNAL REGISTERS------------
 	-------------------------------------------------
 
+	-------------------------------------------------
+	--------------------ALU--------------------------
+	-------------------------------------------------
 	signal res : std_logic_vector(7 downto 0) := (others => '0');
+	-------------------------------------------------
+	-------------------END OF ALU--------------------
+	-------------------------------------------------
 
 begin
 	-------------- REGISTER -----------------
@@ -112,7 +119,7 @@ begin
 		if (rising_edge(clk)) then
 			utA <= reg(conv_integer(IR1_term1));
 			utB <= reg(conv_integer(IR1_term2));
-			-- WRONG WRONG WRONG WRONG, blir 16 bitar, fast playerXY är bara 8 bitar.
+			-- TODO FIX: reg(0) & reg(1) blir 16 bitar, fast playerXY är bara 8 bitar.
 			playerXY <= reg(0) & reg(1);	-- Player Y and X position are stored in register 0 and 1.
 			reg(2) <= joystick;		-- We store the joystick value in register 2.
 
@@ -134,14 +141,14 @@ begin
 	-------- END Program Memory -------
 
 	----- Jump logic
-	-------- MUX 1 --------						--needs fix
+	-------- MUX 1 --------						--needs fix YES
 	with ? select
 	mux_1 <= pm_instruction when ?,
 			"0000" when others;
 	------- END MUX 1 -------
 
 	----- Stall logic
-	-------- MUX 2 --------						--needs fix
+	-------- MUX 2 --------						--needs fix YES
 	with ? select 
 	mux_2 <= ir1 when ?,
 			"0000" when others;
@@ -247,7 +254,7 @@ begin
 			end if;
 			-- branch, branch on flag, nop and halt does not affect alu
 			
-			-- WRONG WRONG WRONG WRONG mapm bredd är 8 bitar, tile är bara 2 bitar, FIXA
+			-- TODO FIX: mapm bredd är 8 bitar, tile är bara 2 bitar
 			tile <= mapm(conv_integer(mapm_address));	-- outputs requested pixel to pixel selector
 		end if;
 	end PROCESS;
