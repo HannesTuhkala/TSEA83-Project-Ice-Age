@@ -8,10 +8,9 @@ entity cpu is
 		playerXY : out std_logic_vector(7 downto 0);-- Player coordinate
 		playerTransition : out std_logic_vector(7 downto 0);    -- Used to output how far the player has moved between two tiles. Exact data layout tbd
 		joystick: in std_logic_vector(7 downto 0);
-		mapm_addres : in std_logic_vector(7 downto 0);		--Addres by which graphics component can select type of tile in tilemem
-		tile : out std_logic_vector(1 downto 0); 		--Tile type at mapm_addres
-		
-
+		mapm_address : in std_logic_vector(7 downto 0);		--Address by which graphics component can select type of tile in tilemem
+		tile : out std_logic_vector(1 downto 0) 		--Tile type at mapm_addres
+	);
 end cpu;
 
 architecture behavioral of cpu is
@@ -39,7 +38,7 @@ architecture behavioral of cpu is
         	--mapm is arranged as: highest 4 bits denote column, 
         	--lowest 4 denote row. "1-" denotes ground, "01" 
 		--denotes rock, "00" denotes ice.
-        type mapm_t is array(0 to 255) of 
+    type mapm_t is array(0 to 255) of 
 			std_logic_vector(7 downto 0); 
 	signal mapm : mapm_t := (others => (others => '0')); 
 	----FLAGS----   
@@ -64,23 +63,23 @@ architecture behavioral of cpu is
 	-------------------REGISTER-----------------------
 	--------------------------------------------------
 	type reg_t is array(0 to 63) of 
-		std_logic_vector(0 downto 7);		
+	std_logic_vector(7 downto 0);	
 
 	signal reg : reg_t := (others => (others => '0'));
 
 	signal reg_enable : std_logic_vector(1 downto 0) := (others => '0');
-	signal utA : std_logic_vector(8 downto 0) := (others => '0');
-	signal utB : std_logic_vector(8 downto 0) := (others => '0');
+	signal uta : std_logic_vector(7 downto 0) := (others => '0');
+	signal utb : std_logic_vector(7 downto 0) := (others => '0');
 	-------------------------------------------------
-	----------------END OF REGISTER------------------
+	----------------end of register------------------
 	-------------------------------------------------
 
 	-------------------------------------------------
-	--------------INTERNAL REGISTERS-----------------
+	--------------internal registers-----------------
 	-------------------------------------------------
-	signal IR1 : std_logic_vector(31 downto 0) := (others => '0');
-	signal IR2 : std_logic_vector(31 downto 0) := (others => '0');
-	signal IR3 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir1 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir2 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir3 : std_logic_vector(31 downto 0) := (others => '0');
 	signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
 	
@@ -104,20 +103,21 @@ architecture behavioral of cpu is
 	------------END OF INTERNAL REGISTERS------------
 	-------------------------------------------------
 
+	signal res : std_logic_vector(7 downto 0) := (others => '0');
+
 begin
 	-------------- REGISTER -----------------
 	PROCESS(clk)
-	begin
+	BEGIN
 		if (rising_edge(clk)) then
-			utA <= reg(IR1_term1);
-			utB <= reg(IR1_term2);
-			playerX <= reg(valdadress);
-			reg(joystick adress) <= joystick
-			if (IR3_op = "0001"|| IR3_op = "0011" || 
-			   IR3_op = "0100" || IR3_op = "0101" ||
-			   IR3_op = "0110") then
+			utA <= reg(conv_integer(IR1_term1));
+			utB <= reg(conv_integer(IR1_term2));
+			-- WRONG WRONG WRONG WRONG, blir 16 bitar, fast playerXY är bara 8 bitar.
+			playerXY <= reg(0) & reg(1);	-- Player Y and X position are stored in register 0 and 1.
+			reg(2) <= joystick;		-- We store the joystick value in register 2.
 
-				reg(IR3_fA) <= ALU_out;
+			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110") then
+				reg(conv_integer(IR3_fA)) <= res;
 			end if;
 		end if;
 	END PROCESS;
@@ -128,7 +128,7 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			pm_instruction <= pm(PC);
+			pm_instruction <= pm(conv_integer(PC));
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
@@ -163,7 +163,7 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			-- If IR1_op code is equal to the OP code for branch or Branch on flag (and correct flag is set).
-			if (IR1_op = "1011" || (IR1_op = "1010" && ((IR1_am2(0) = '0' && z = '1')||(IR1_am2(0) = '1' && n = '1')))) then
+			if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
 				branch <= '1';
 			else
 				branch <= '0';
@@ -194,7 +194,7 @@ begin
 				res <= A2 + B2;
 			end if;
 			
-			if (IR2_op = "0100" || IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value
+			if (IR2_op = "0100" or IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value
 				res <= A2 - B2;
 				
 				if(A2 < B2) then 
@@ -247,7 +247,8 @@ begin
 			end if;
 			-- branch, branch on flag, nop and halt does not affect alu
 			
-			tile <= mapm(mapm_addres);	-- outputs requested pixel to pixel selector
+			-- WRONG WRONG WRONG WRONG mapm bredd är 8 bitar, tile är bara 2 bitar, FIXA
+			tile <= mapm(conv_integer(mapm_address));	-- outputs requested pixel to pixel selector
 		end if;
 	end PROCESS;
 	
