@@ -11,7 +11,10 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 -- entity
 entity VGA_MOTOR is
   port ( clk			: in std_logic;
-	 addr			: out unsigned(10 downto 0);
+	 playerCoordRough	: in std_logic_vector(7 downto 0);
+	 playerCoordDetailed	: in std_logic_vector(7 downto 0);
+	 tileSlot		: out std_logic_vector(7 downto 0);
+	 tileType		: in std_logic_vector(1 downto 0);
 	 rst			: in std_logic;
 	 vgaRed		        : out std_logic_vector(2 downto 0);
 	 vgaGreen	        : out std_logic_vector(2 downto 0);
@@ -29,8 +32,7 @@ architecture Behavioral of VGA_MOTOR is
   signal	ClkDiv	        : unsigned(1 downto 0);		-- Clock divisor, to generate 25 MHz signal
   signal	Clk25		: std_logic;			-- One pulse width 25 MHz signal
 		
-  signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
-  signal	tileAddr	: unsigned(10 downto 0);	-- Tile address
+  signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data'''''
 
   signal        blank           : std_logic;                    -- blanking signal
 	
@@ -40,59 +42,83 @@ architecture Behavioral of VGA_MOTOR is
 
 -- Tile memory
   signal tileMem : ram_t := 
-		( x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- space
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-                  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",	-- A
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"00",x"00",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		(--Ice		code: 00
 
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- B
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- B
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"5b",x"37",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"13",x"37",x"17",x"37",x"13",x"37",x"37",x"5b",x"37",x"17",x"37",x"17",x"5b",x"37",
+		x"37",x"37",x"5b",x"37",x"37",x"37",x"37",x"5b",x"37",x"17",x"37",x"5b",x"13",x"37",x"37",x"37",
+		x"5b",x"37",x"37",x"37",x"37",x"17",x"37",x"37",x"17",x"37",x"37",x"17",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"17",x"37",x"13",x"37",x"37",x"5b",x"37",x"13",x"37",x"37",x"37",x"13",x"37",x"5b",
+		x"37",x"13",x"37",x"37",x"5b",x"37",x"37",x"37",x"37",x"37",x"5b",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"37",x"13",x"37",x"37",x"37",x"13",x"37",x"37",x"37",x"37",x"17",x"37",x"17",x"37",
+		x"37",x"5b",x"37",x"37",x"37",x"37",x"17",x"37",x"37",x"37",x"17",x"37",x"37",x"13",x"37",x"37",
+		x"37",x"13",x"17",x"37",x"5b",x"17",x"37",x"37",x"5b",x"37",x"37",x"37",x"5b",x"37",x"37",x"17",
+		x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"17",x"37",x"13",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"5b",x"37",x"37",x"13",x"37",x"37",x"17",x"37",x"37",x"37",x"37",x"13",x"37",x"5b",x"37",
+		x"37",x"37",x"37",x"17",x"37",x"17",x"5b",x"37",x"37",x"37",x"37",x"5b",x"37",x"37",x"37",x"37",
+		x"37",x"13",x"37",x"37",x"5b",x"37",x"37",x"37",x"17",x"37",x"13",x"37",x"17",x"17",x"13",x"37",
+		x"37",x"37",x"17",x"37",x"37",x"37",x"37",x"17",x"37",x"37",x"37",x"37",x"13",x"37",x"37",x"37",
+		x"37",x"37",x"37",x"37",x"37",x"13",x"37",x"37",x"37",x"37",x"17",x"37",x"37",x"37",x"37",x"37",
+
+
+		--Rock		code: 01
+		
+		x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"37",x"5b",x"37",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"37",x"37",x"37",x"37",x"49",x"49",x"49",x"37",x"37",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"13",x"37",x"5b",x"49",x"49",x"92",x"49",x"49",x"37",x"37",x"37",x"37",x"5b",x"37",
+		x"37",x"5b",x"37",x"37",x"37",x"49",x"92",x"92",x"92",x"49",x"49",x"5b",x"13",x"37",x"37",x"37",
+		x"5b",x"37",x"5b",x"37",x"49",x"49",x"92",x"68",x"92",x"92",x"49",x"37",x"37",x"37",x"37",x"37",
+		x"37",x"37",x"37",x"49",x"49",x"92",x"92",x"92",x"49",x"92",x"49",x"49",x"37",x"13",x"37",x"5b",
+		x"37",x"37",x"49",x"49",x"92",x"92",x"92",x"44",x"92",x"92",x"92",x"49",x"49",x"49",x"37",x"37",
+		x"37",x"37",x"49",x"68",x"92",x"92",x"92",x"92",x"92",x"49",x"49",x"49",x"92",x"49",x"49",x"37",
+		x"37",x"49",x"92",x"92",x"92",x"49",x"92",x"92",x"49",x"49",x"68",x"92",x"44",x"92",x"49",x"37",
+		x"49",x"49",x"92",x"92",x"92",x"44",x"92",x"49",x"49",x"92",x"92",x"92",x"49",x"92",x"49",x"37",
+		x"49",x"92",x"49",x"92",x"92",x"92",x"92",x"49",x"49",x"92",x"44",x"92",x"92",x"92",x"49",x"49",
+		x"49",x"92",x"92",x"49",x"49",x"92",x"92",x"49",x"49",x"49",x"92",x"49",x"49",x"49",x"49",x"49",
+		x"37",x"49",x"92",x"92",x"49",x"49",x"49",x"92",x"92",x"49",x"49",x"49",x"68",x"92",x"92",x"49",
+		x"37",x"49",x"49",x"92",x"68",x"44",x"92",x"92",x"92",x"92",x"49",x"92",x"92",x"92",x"92",x"49",
+		x"13",x"37",x"49",x"49",x"49",x"92",x"92",x"49",x"49",x"49",x"49",x"92",x"92",x"44",x"92",x"49",
+		x"37",x"37",x"37",x"37",x"49",x"49",x"49",x"49",x"37",x"37",x"49",x"49",x"49",x"49",x"49",x"37",
 		  
+		--Ground	code: 10
 
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- C
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- B
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		x"37",x"13",x"37",x"37",x"37",x"37",x"91",x"91",x"37",x"5b",x"91",x"91",x"91",x"37",x"37",x"13",
+		x"37",x"5b",x"91",x"6d",x"69",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"5b",x"37",x"37",
+		x"37",x"5b",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"6d",x"91",x"91",x"91",x"5b",x"37",
+		x"37",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"69",x"91",x"91",x"91",x"91",x"91",x"91",x"5b",
+		x"37",x"6d",x"69",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"6d",x"91",x"91",x"91",x"91",x"91",
+		x"37",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"69",x"91",x"91",x"91",x"91",
+		x"37",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",
+		x"91",x"91",x"91",x"69",x"91",x"91",x"6d",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",
+		x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",
+		x"91",x"6d",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"69",x"91",x"91",x"91",x"91",
+		x"37",x"91",x"91",x"91",x"91",x"91",x"6d",x"69",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"6d",
+		x"37",x"91",x"6d",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",
+		x"91",x"91",x"91",x"69",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"91",x"5b",
+		x"37",x"91",x"91",x"91",x"6d",x"91",x"91",x"91",x"91",x"91",x"6d",x"91",x"91",x"91",x"91",x"37",
+		x"37",x"5b",x"91",x"91",x"91",x"91",x"91",x"91",x"69",x"91",x"91",x"91",x"91",x"5b",x"37",x"37",
+		x"37",x"37",x"5b",x"91",x"91",x"91",x"6d",x"91",x"91",x"91",x"91",x"91",x"5b",x"37",x"37",x"13",
 
-                  );
+
+		  --sprite	code: 11 (hard code 11 into any tile address, or a sprite will be drawn there with white background)
+
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"71",x"00",x"00",x"71",x"00",x"00",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"da",x"da",x"da",x"da",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"da",x"da",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"00",x"00",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"00",x"00",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",
+		x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",
+		x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",
+		x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",
+		x"ff",x"00",x"00",x"20",x"00",x"00",x"00",x"ff",x"ff",x"00",x"00",x"00",x"20",x"00",x"00",x"ff",
+		x"ff",x"b2",x"b6",x"b2",x"b2",x"b6",x"ff",x"ff",x"ff",x"ff",x"b6",x"b2",x"b2",x"b6",x"b2",x"ff");
 		  
 begin
 
@@ -199,38 +225,53 @@ begin
 	blank <= '1' when (Xpixel > 255) or (Ypixel > 255) else '0';	
 
   
-  -- Tile memory
+  -- ***********************************
+  -- *                                 *
+  -- *  VHDL for :                     *
+  -- *  pixel selection                *
+  -- *                                 *
+  -- ***********************************
   process(clk)
   begin
     if rising_edge(clk) then
+    
+      tileSlot(7 downto 4) <= Ypixel(7 downto 0);		-- find tile over which pixel rests
+      tilsSlot(3 downto 0) <= Xpixel(7 downto 0);		--
+    
       if (blank = '0') then
-        tilePixel <= tileMem(to_integer(tileAddr));
+	if (	   playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4) <= Ypixel
+		&& playerCoordRough(7 downto 4) & unsigned(playerCoordDetailed(7 downto 4)) > (Ypixel - 16)
+		&& playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0)) <= Xpixel
+		&& playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0) > (Xpixel - 16)
+		&& tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - (playerCoordDetailed) ) != "ff") then	--Very tired when wrote this; check for errors
+	  tilePixel < tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);			--Very tired when wrote this; check for errors/Olav
+	else
+	  tilePixel < tileMem(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 1))
+	end if;
+		) 
+)
+
+        --tilePixel <= tileMem(to_integer(tileAddr));		--deprecated
       else
         tilePixel <= (others => '0');
       end if;
     end if;
   end process;
-	
-
-
-  -- Tile memory address composite
-  tileAddr <= unsigned(data(4 downto 0)) & Ypixel(4 downto 2) & Xpixel(4 downto 2);
-
 
   -- Picture memory address composite
   addr <= to_unsigned(16, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5);
 
-
   -- VGA generation
-  vgaRed(2) 	<= tilePixel(7);
-  vgaRed(1) 	<= tilePixel(6);
-  vgaRed(0) 	<= tilePixel(5);
-  vgaGreen(2)   <= tilePixel(4);
-  vgaGreen(1)   <= tilePixel(3);
-  vgaGreen(0)   <= tilePixel(2);
-  vgaBlue(2) 	<= tilePixel(1);
-  vgaBlue(1) 	<= tilePixel(0);
+  vgaRed(2 downto 0) 	<= tilePixel(7 downto 5);
+  vgaGreen(2 donwto 0)	<= tilePixel(4 downto 2);
+  vgaBlue(2 downto 1)	<= tilePixel(1 downto 0);
+  --vgaRed(1) 	<= tilePixel(6);
+  --vgaRed(0) 	<= tilePixel(5);
+  --vgaGreen(2)   <= tilePixel(4);
+  --vgaGreen(1)   <= tilePixel(3);
+  --vgaGreen(0)   <= tilePixel(2);
+  --vgaBlue(2) 	<= tilePixel(1);
+  --vgaBlue(1) 	<= tilePixel(0);
 
 
 end Behavioral;
-
