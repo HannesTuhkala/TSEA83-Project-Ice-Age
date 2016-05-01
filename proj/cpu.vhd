@@ -5,8 +5,8 @@ use IEEE.NUMERIC_STD.ALL;
 entity cpu is
 	port (
 		clk: in std_logic;
-		playerXY : out std_logic_vector(7 downto 0);-- Player coordinate
-		playerTransition : out std_logic_vector(7 downto 0);    -- Used to output how far the player has moved between two tiles. Exact data layout tbd
+		playerXYR : out std_logic_vector(7 downto 0);-- Player coordinate high (each worth 16 pixels)
+		playerXYD : out std_logic_vector(7 downto 0);-- Player coordinate low (used for transitions between tiles)
 		joystick: in std_logic_vector(7 downto 0);
 		mapm_address : in std_logic_vector(7 downto 0);		--Address by which graphics component can select type of tile in tilemem
 		tile : out std_logic_vector(1 downto 0) 		--Tile type at mapm_addres
@@ -36,10 +36,10 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 		        ----Map layout Memory----
         	--mapm is arranged as: highest 4 bits denote column, 
-        	--lowest 4 denote row. "1-" denotes ground, "01" 
-		--denotes rock, "00" denotes ice.
+        	--lowest 4 denote row. "10" denotes ground, "01" 
+		--denotes rock, "00" denotes ice. Don't use "11" or you'll draw sprites
     type mapm_t is array(0 to 255) of 
-			std_logic_vector(7 downto 0); 
+			std_logic_vector(1 downto 0); 
 	signal mapm : mapm_t := (others => (others => '0'));
 	
 	----FLAGS----   
@@ -69,8 +69,8 @@ architecture behavioral of cpu is
 	signal reg : reg_t := (others => (others => '0'));
 
 	signal reg_enable : std_logic_vector(1 downto 0) := (others => '0');
-	signal uta : std_logic_vector(7 downto 0) := (others => '0');
-	signal utb : std_logic_vector(7 downto 0) := (others => '0');
+	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
+	signal B2 : std_logic_vector(7 downto 0) := (others => '0');
 	-------------------------------------------------
 	----------------End of register------------------
 	-------------------------------------------------
@@ -117,14 +117,14 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			utA <= reg(conv_integer(IR1_term1));
-			utB <= reg(conv_integer(IR1_term2));
-			-- TODO FIX: reg(0) & reg(1) blir 16 bitar, fast playerXY är bara 8 bitar.
-			playerXY <= reg(0) & reg(1);	-- Player Y and X position are stored in register 0 and 1.
+			A2 <= reg(to_integer(unsigned(IR1_term1)));
+			B2 <= reg(to_integer(unsigned(IR1_term2)));
+			playerXYR <= reg(0);	-- Player Y and X position are stored in register 0 and 1.
+			playerXYD <= reg(1);
 			reg(2) <= joystick;		-- We store the joystick value in register 2.
 
 			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110") then
-				reg(conv_integer(IR3_fA)) <= res;
+				reg(to_integer(unsigned(IR3_fA))) <= res;
 			end if;
 		end if;
 	END PROCESS;
@@ -135,7 +135,7 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			pm_instruction <= pm(conv_integer(PC));
+			pm_instruction <= pm(to_integer(unsigned(PC)));
 		end if;
 	END PROCESS;
 	-------- END Program Memory -------
@@ -222,9 +222,9 @@ begin
 			end if;
 			
 			if (IR2_op = "0110") then   -- Shift
-				if (am2(1) = '1') then 	-- Right Shift
+				if (IR2_am2(1) = '1') then 	-- Right Shift
 					res(6 downto 0) <= A2(7 downto 1);
-					if (am2(0) = '1')then -- arithmethric shift
+					if (IR2_am2(0) = '1')then -- arithmethric shift
 						res(7) <= A2(7);
 					else 
 						res(7) <= '0';
@@ -237,25 +237,25 @@ begin
 			
 			if (IR2_op = "0111") then   -- Collision detector
 				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= mapm(A2 - 16)(0);	--up
-					when "01" => z <= mapm(A2 + 16)(0);	--down
-					when "10" => z <= mapm(A2 - 1 )(0);	--left
-					when "11" => z <= mapm(A2 + 1 )(0);	--right
+					when "00" => z <= mapm(to_integer(unsigned(A2)) - 16)(0);	--up
+					when "01" => z <= mapm(to_integer(unsigned(A2)) + 16)(0);	--down
+					when "10" => z <= mapm(to_integer(unsigned(A2)) - 1 )(0);	--left
+					when "11" => z <= mapm(to_integer(unsigned(A2)) + 1 )(0);	--right
 				end case;
-				n <= mapm(A2)(1); -- detect ground
+				n <= mapm(to_integer(unsigned(A2)))(1); -- detect ground
 			end if;
 			
 			if (IR2_op = "1001") then   -- set flag
-				if (am2(1) = '1') then
-					z <= am2(0);
+				if (IR2_am2(1) = '1') then
+					z <= IR2_am2(0);
 				else 
-					n <= am2(0);
+					n <= IR2_am2(0);
 				end if;
 			end if;
 			-- branch, branch on flag, nop and halt does not affect alu
 			
 			-- TODO FIX: mapm bredd är 8 bitar, tile är bara 2 bitar
-			tile <= mapm(conv_integer(mapm_address));	-- outputs requested pixel to pixel selector
+			tile <= mapm(to_integer(unsigned(mapm_address)));	-- outputs requested pixel to pixel selector
 		end if;
 	end PROCESS;
 	

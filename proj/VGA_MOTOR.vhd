@@ -239,19 +239,15 @@ begin
       tilsSlot(3 downto 0) <= Xpixel(7 downto 0);		--
     
       if (blank = '0') then
-	if (	   playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4) <= Ypixel
-		&& playerCoordRough(7 downto 4) & unsigned(playerCoordDetailed(7 downto 4)) > (Ypixel - 16)
-		&& playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0)) <= Xpixel
-		&& playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0) > (Xpixel - 16)
-		&& tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - (playerCoordDetailed) ) != "ff") then	--Very tired when wrote this; check for errors
-	  tilePixel < tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);			--Very tired when wrote this; check for errors/Olav
+	if (	   to_integer(unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4))) <= Ypixel
+		&& to_integer(unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4))) > (Ypixel - 16)
+		&& to_integer(unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0))) <= Xpixel
+		&& to_integer(unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0))) > (Xpixel - 16)
+		&& tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff") then		--Very tired when wrote this; check for errors
+	  tilePixel < tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
 	else
-	  tilePixel < tileMem(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 1))
+	  tilePixel < tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
 	end if;
-		) 
-)
-
-        --tilePixel <= tileMem(to_integer(tileAddr));		--deprecated
       else
         tilePixel <= (others => '0');
       end if;
@@ -259,19 +255,11 @@ begin
   end process;
 
   -- Picture memory address composite
-  addr <= to_unsigned(16, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5);
+  addr <= to_unsigned(16, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5); --to whoever wrote this, please explain or comment /Olav
 
   -- VGA generation
   vgaRed(2 downto 0) 	<= tilePixel(7 downto 5);
   vgaGreen(2 donwto 0)	<= tilePixel(4 downto 2);
   vgaBlue(2 downto 1)	<= tilePixel(1 downto 0);
-  --vgaRed(1) 	<= tilePixel(6);
-  --vgaRed(0) 	<= tilePixel(5);
-  --vgaGreen(2)   <= tilePixel(4);
-  --vgaGreen(1)   <= tilePixel(3);
-  --vgaGreen(0)   <= tilePixel(2);
-  --vgaBlue(2) 	<= tilePixel(1);
-  --vgaBlue(1) 	<= tilePixel(0);
-
 
 end Behavioral;

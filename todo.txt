@@ -1,11 +1,5 @@
 CPU.vhd:
 
-rad 123: playerXY <= reg(0) & reg(1) ger fel pga olika antal bitar, behövs fixas
-
 rad 145: fixa mux 1
 
 rad 152: fixa mux 2
-
-i ALU:n: Definiera A2, B2 och andra variabler
-
-rad 258: försöker tilldela 8 bitar till tile som är 2 bitar stor
