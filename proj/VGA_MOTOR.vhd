@@ -235,8 +235,8 @@ begin
   begin
     if rising_edge(clk) then
     
-      tileSlot(7 downto 4) <= Ypixel(7 downto 0);		-- find tile over which pixel rests
-      tilsSlot(3 downto 0) <= Xpixel(7 downto 0);		--
+      tileSlot(7 downto 4) <= Ypixel(7 downto 4);		-- find tile over which pixel rests
+      tilsSlot(3 downto 0) <= Xpixel(7 downto 4);		--
     
       if (blank = '0') then
 	if (	   to_integer(unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4))) <= Ypixel
