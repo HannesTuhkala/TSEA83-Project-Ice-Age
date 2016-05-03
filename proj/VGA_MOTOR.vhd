@@ -1,4 +1,5 @@
---------------------------------------------------------------------------------
+-
+------------------------------------------------------------------------------
 -- VGA MOTOR
 
 
@@ -244,9 +245,9 @@ begin
 		&& to_integer(unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0))) <= Xpixel
 		&& to_integer(unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0))) > (Xpixel - 16)
 		&& tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff") then		--Very tired when wrote this; check for errors
-	  tilePixel < tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
+	  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
 	else
-	  tilePixel < tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
+	  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
 	end if;
       else
         tilePixel <= (others => '0');
