@@ -81,8 +81,8 @@ architecture behavioral of cpu is
 	signal ir1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal ir2 : std_logic_vector(31 downto 0) := (others => '0');
 	signal ir3 : std_logic_vector(31 downto 0) := (others => '0');
-	signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
-	signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
+	--signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
+	--signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
 	
 	-------------------ALIAS IR-------------------------
 	alias IR1_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
@@ -118,7 +118,11 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			A2 <= reg(to_integer(unsigned(IR1_term1)));
-			B2 <= reg(to_integer(unsigned(IR1_term2)));
+			if ir1_am2 = "01" then
+				B2 <= reg(to_integer(unsigned(IR1_term2)));
+			else 
+				b2 <= ir1_term2;
+			end if;
 			playerXYR <= reg(0);	-- Player Y and X position are stored in register 0 and 1.
 			playerXYD <= reg(1);
 			reg(2) <= joystick;		-- We store the joystick value in register 2.
@@ -142,16 +146,16 @@ begin
 
 	----- Jump logic
 	-------- MUX 1 --------						--needs fix YES
-	with ? select
-	mux_1 <= pm_instruction when ?,
+	--with ? select
+	--mux_1 <= pm_instruction when ?,
 			"0000" when others;
 	------- END MUX 1 -------
 
 	----- Stall logic
 	-------- MUX 2 --------						--needs fix YES
-	with ? select 
-	mux_2 <= ir1 when ?,
-			"0000" when others;
+	--with ? select 
+	--mux_2 <= ir1 when ?,
+	--		"0000" when others;
 	------- END MUX 2 -------
 
 	--------- Internal Registers -------
