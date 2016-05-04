@@ -1,6 +1,6 @@
 ﻿0000 Nop
 0001 move
-0010 deprecated -- unused, add AND func. or such?
+0010 mapStore
 0011 Add
 0100 Sub
 0101 Mult
@@ -24,8 +24,11 @@ am2= 01 -> register(term)
 0000 Nop
 utför ingen operation
 
---0001 move	
+0001 move	
 lagra term2 till register(utaddr)
+
+0010 mapStore
+store term2 (va)(1 downto 0) i mapm address reg(term 1)
 
 0011 Add
 addera reg(term1) med term2 (va), lagra i reg(utaddr)

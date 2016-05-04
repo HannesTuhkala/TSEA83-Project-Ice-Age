@@ -201,6 +201,10 @@ begin
 				res <= B2;
 			end if;
 			
+			if (ir_2op = "0010") then
+				mapm(to_integer(unsigned(A2))) <= B2(1 downto 0);
+			end if;
+
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
 			end if;
