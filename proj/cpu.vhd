@@ -135,20 +135,13 @@ begin
 
 	------------- END Register --------------
 
-	-------- Program Memory ---------
-	PROCESS(clk)
-	BEGIN
-		if (rising_edge(clk)) then
-			pm_instruction <= pm(to_integer(unsigned(PC)));
-		end if;
-	END PROCESS;
 	-------- END Program Memory -------
 
 	----- Jump logic
 	-------- MUX 1 --------						--needs fix YES
 	--with ? select
 	--mux_1 <= pm_instruction when ?,
-			"0000" when others;
+	--		"0000" when others;
 	------- END MUX 1 -------
 
 	----- Stall logic
@@ -163,8 +156,8 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			IR3 <= IR2;
-			IR2 <= mux_2;
-			IR1 <= mux_1; 
+			IR2 <= IR1;
+			IR1 <= pm(to_integer(unsigned(PC))); 
 		end if;
 	END PROCESS;
 	------- END Internal Registers -------	
@@ -201,7 +194,7 @@ begin
 				res <= B2;
 			end if;
 			
-			if (ir_2op = "0010") then
+			if (IR2_op = "0010") then
 				mapm(to_integer(unsigned(A2))) <= B2(1 downto 0);
 			end if;
 
@@ -226,7 +219,7 @@ begin
 			end if;
 
 			if (IR2_op = "0101") then   --Mult
-				res <= A2 * B2;
+				res <= "00000000"; --A2 * B2;
 			end if;
 			
 			if (IR2_op = "0110") then   -- Shift
@@ -239,7 +232,7 @@ begin
 					end if;
 				else 
 					res(7 downto 1) <= A2(6 downto 0);
-					res(0 <= '0');
+					res(0) <= '0';
 				end if;
 			end if;
 			
@@ -249,6 +242,7 @@ begin
 					when "01" => z <= mapm(to_integer(unsigned(A2)) + 16)(0);	--down
 					when "10" => z <= mapm(to_integer(unsigned(A2)) - 1 )(0);	--left
 					when "11" => z <= mapm(to_integer(unsigned(A2)) + 1 )(0);	--right
+					when others => z <= z;
 				end case;
 				n <= mapm(to_integer(unsigned(A2)))(1); -- detect ground
 			end if;

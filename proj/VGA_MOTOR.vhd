@@ -42,7 +42,7 @@ architecture Behavioral of VGA_MOTOR is
 	
 
   -- Tile memory type
-  type ram_t is array (0 to 2047) of std_logic_vector(7 downto 0);
+  type ram_t is array (0 to 1023) of std_logic_vector(7 downto 0);
 
 -- Tile memory
   signal tileMem : ram_t := 
@@ -243,15 +243,16 @@ begin
       tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
       if (blank = '0') then
-	if	   (to_unsigned(playerCoordRough(7 downto 4) < to_unsigned(Ypixel(7 downto 4))    ) || ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4))     && to_unsigned(playerCoordDetailed(7 downto 4)) <= to_unsigned(Ypixel(3 downto 0))     ))) 
-		&& (to_unsigned(playerCoordRough(7 downto 4) > to_unsigned(Ypixel(7 downto 4)) - 1) || ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4)) - 1 && to_unsigned(playerCoordDetailed(7 downto 4)) >= to_unsigned(Ypixel(3 downto 0)) - 1 )))	--Forgive me/Olav
-		&& (to_unsigned(playerCoordRough(3 downto 0) < to_unsigned(Xpixel(3 downto 0))    ) || ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4))     && to_unsigned(playerCoordDetailed(3 downto 0)) <= to_unsigned(Xpixel(3 downto 0))     ))) 
-		&& (to_unsigned(playerCoordRough(3 downto 0) > to_unsigned(Xpixel(3 downto 0)) - 1) || ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4)) - 1 && to_unsigned(playerCoordDetailed(3 downto 0)) >= to_unsigned(Xpixel(3 downto 0)) - 1 )))
-		&& tileMem(768 + (16 * to_unsigned(Ypixel(3 downto 0))) + Xpixel(3 downto 0)  - to_unsigned(playerCoordDetailed)) != 255 then
-	  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
-	else
-	  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
-	end if;
+--------if	   (to_unsigned(playerCoordRough(7 downto 4) < to_unsigned(Ypixel(7 downto 4))    ) or ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4))     and to_unsigned(playerCoordDetailed(7 downto 4)) <= to_unsigned(Ypixel(3 downto 0))     ))) 
+--------	and (to_unsigned(playerCoordRough(7 downto 4) > to_unsigned(Ypixel(7 downto 4)) - 1) or ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4)) - 1 and to_unsigned(playerCoordDetailed(7 downto 4)) >= to_unsigned(Ypixel(3 downto 0)) - 1 )))	--Forgive me/Olav
+--------	and (to_unsigned(playerCoordRough(3 downto 0) < to_unsigned(Xpixel(3 downto 0))    ) or ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4))     and to_unsigned(playerCoordDetailed(3 downto 0)) <= to_unsigned(Xpixel(3 downto 0))     ))) 
+--------	and (to_unsigned(playerCoordRough(3 downto 0) > to_unsigned(Xpixel(3 downto 0)) - 1) or ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4)) - 1 and to_unsigned(playerCoordDetailed(3 downto 0)) >= to_unsigned(Xpixel(3 downto 0)) - 1 )))
+--------	and tileMem(768 + (16 * to_unsigned(Ypixel(3 downto 0))) + Xpixel(3 downto 0)  - to_unsigned(playerCoordDetailed)) != 255 then
+--------  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
+--------else
+--------  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
+--------end if;
+	tilePixel <=(others => '1');
       else
         tilePixel <= (others => '0');
       end if;
@@ -259,11 +260,10 @@ begin
   end process;
 
   -- Picture memory address composite
-  addr <= to_unsigned(16, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5); --to whoever wrote this, please explain or comment /Olav
 
   -- VGA generation
   vgaRed(2 downto 0) 	<= tilePixel(7 downto 5);
-  vgaGreen(2 donwto 0)	<= tilePixel(4 downto 2);
+  vgaGreen(2 downto 0)	<= tilePixel(4 downto 2);
   vgaBlue(2 downto 1)	<= tilePixel(1 downto 0);
 
 end Behavioral;

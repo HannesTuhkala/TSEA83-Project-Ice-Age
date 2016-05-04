@@ -1,8 +1,11 @@
-entity iceage
+Library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+entity iceage is
 	port (
 		clk : in std_logic;
 		joystick: in std_logic_vector(7 downto 0);
-		rst : out unsigned(10 downto 0);
+		rst : in std_logic;
 		vgaRed: out std_logic_vector(2 downto 0);
 		vgaGreen : out std_logic_vector(2 downto 0);
 		vgaBlue : out std_logic_vector(2 downto 1);
@@ -12,7 +15,7 @@ end iceage;
 
 architecture behavioral of iceage is
 
-	component cpu
+	component cpu is
 		port (
 			clk : in std_logic;
 			playerXYD: out std_logic_vector(7 downto 0); --TRANSISTION
@@ -22,20 +25,20 @@ architecture behavioral of iceage is
 			tile : out std_logic_vector(1 downto 0));
 	end component cpu;
 	
-	component VGA_MOTOR
+	component VGA_MOTOR is
 		port (
+			rst : in std_logic;
 			clk : in std_logic;
-			playerCoordRough in : std_logic_vector(7 downto 0);
-			playerCoordDetailed in : std_logic_vector(7 downto 0);
+			playerCoordRough : in std_logic_vector(7 downto 0);
+			playerCoordDetailed : in std_logic_vector(7 downto 0);
 			tileSlot: out std_logic_vector(7 downto 0);
-			addr : out unsigned(10 downto 0);
 			vgaRed : out std_logic_vector(2 downto 0);
 			vgaGreen : out std_logic_vector(2 downto 0);
 			vgaBlue : out std_logic_vector(2 downto 1);
 			Hsync : out std_logic;
-			Vsync : out std_logic);
-			tileType : in std_logic_vector(1 downto 0);
-	end component graphic;
+			Vsync : out std_logic;
+			tileType : in std_logic_vector(1 downto 0));
+	end component VGA_MOTOR;
 	
 	signal  mapLink: std_logic_vector(7 downto 0); -- mapmlinks with tileslot
 	signal playerDlink : std_logic_vector(7 downto 0);
@@ -44,6 +47,6 @@ architecture behavioral of iceage is
 	
 begin
 	MAP1 : cpu port map(clk=>clk, joystick=>joystick, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
-	MAP2 : VGA_MOTOR port map(clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> playerRlink,playerCoordDetailed=>playerDlink, tileType=>tileLink);
+	MAP2 : VGA_MOTOR port map(rst => rst,clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> playerRlink,playerCoordDetailed=>playerDlink, tileType=>tileLink);
 
 end behavioral;
