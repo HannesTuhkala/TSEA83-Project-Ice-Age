@@ -6,7 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity Decoder is
 end Decoder;
 
-architecture Behavioral of iceage_tb is
+architecture Behavioral of VGA_MOTOR_tb is
 
   component lab
       Port (
@@ -14,7 +14,8 @@ architecture Behavioral of iceage_tb is
 	    joystick: in std_logic_vector(7 downto 0);
            );
   end component;
-
+  
+  type map_t is array(255 downto 0) of std_logic_vector(1 downto 0);
   -- Testsignaler
   signal clk : STD_LOGIC := '0';
   signal joystick : std_logic_vector(7 downto 0) := others '0';
