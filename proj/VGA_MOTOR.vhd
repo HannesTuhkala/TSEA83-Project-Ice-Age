@@ -1,4 +1,3 @@
--
 ------------------------------------------------------------------------------
 -- VGA MOTOR
 
@@ -32,6 +31,10 @@ architecture Behavioral of VGA_MOTOR is
   signal	Ypixel	        : unsigned(15 downto 0);		-- Vertical pixel counter
   signal	ClkDiv	        : unsigned(1 downto 0);		-- Clock divisor, to generate 25 MHz signal
   signal	Clk25		: std_logic;			-- One pulse width 25 MHz signal
+  signal 	comp1		: unsigned(3 downto 0);
+  signal 	comp2		: unsigned(3 downto 0);
+  signal 	comp3		: unsigned(3 downto 0);
+  signal 	comp4		: unsigned(3 downto 0);
 		
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data'''''
 
@@ -236,15 +239,15 @@ begin
   begin
     if rising_edge(clk) then
     
-      tileSlot(7 downto 4) <= Ypixel(7 downto 4);		-- find tile over which pixel rests
-      tilsSlot(3 downto 0) <= Xpixel(7 downto 4);		--
+      tileSlot(7 downto 4) <= std_logic_vector(Ypixel(7 downto 4));		-- find tile over which pixel rests
+      tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
       if (blank = '0') then
-	if (	   to_integer(unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4))) <= Ypixel
-		&& to_integer(unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4))) > (Ypixel - 16)
-		&& to_integer(unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0))) <= Xpixel
-		&& to_integer(unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0))) > (Xpixel - 16)
-		&& tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff") then		--Very tired when wrote this; check for errors
+	if to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) <= Ypixel
+		&& (to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) > (Ypixel - 16))
+		&& (to_unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0)) <= Xpixel)
+		&& (to_unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0)) > (Xpixel - 16))
+		&& (tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff")) then		--Very tired when wrote this; check for errors
 	  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
 	else
 	  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
