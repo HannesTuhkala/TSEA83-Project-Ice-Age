@@ -40,7 +40,7 @@ architecture behavioral of cpu is
 		--denotes rock, "00" denotes ice. Don't use "11" or you'll draw sprites
     type mapm_t is array(0 to 255) of 
 			std_logic_vector(1 downto 0); 
-	signal mapm : mapm_t := (others => (others => '0'));
+	signal mapm : mapm_t := (others => "00");
 	
 	----FLAGS----   
 	signal z : std_logic := '0';
@@ -67,6 +67,7 @@ architecture behavioral of cpu is
 		std_logic_vector(7 downto 0);	
 
 	signal reg : reg_t := (others => (others => '0'));
+	signal tmpB2 : std_logic_vector(1 downto 0);
 
 	signal reg_enable : std_logic_vector(1 downto 0) := (others => '0');
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
@@ -186,6 +187,9 @@ begin
 	END PROCESS;
 	-------- END Program Counter ------
 
+
+
+	tmpB2 <= B2(1 downto 0);
 	--------------- ALU ------------------
 	PROCESS(clk)
 	BEGIN
@@ -195,7 +199,7 @@ begin
 			end if;
 			
 			if (IR2_op = "0010") then
-				mapm(to_integer(unsigned(A2))) <= B2(1 downto 0);
+				mapm(to_integer(unsigned(A2))) <= tmpB2;
 			end if;
 
 			if (IR2_op = "0011") then	--Add
@@ -236,16 +240,16 @@ begin
 				end if;
 			end if;
 			
-			if (IR2_op = "0111") then   -- Collision detector
-				case B2(1 downto 0) is	-- detect rocks
-					when "00" => z <= mapm(to_integer(unsigned(A2)) - 16)(0);	--up
-					when "01" => z <= mapm(to_integer(unsigned(A2)) + 16)(0);	--down
-					when "10" => z <= mapm(to_integer(unsigned(A2)) - 1 )(0);	--left
-					when "11" => z <= mapm(to_integer(unsigned(A2)) + 1 )(0);	--right
-					when others => z <= z;
-				end case;
-				n <= mapm(to_integer(unsigned(A2)))(1); -- detect ground
-			end if;
+		--------if (IR2_op = "0111") then   -- Collision detector
+		--------	case tmpB2 is	-- detect rocks
+		--------		when "00" => z <= mapm(to_integer(unsigned(A2)) - 16)(0);	--up
+		--------		when "01" => z <= mapm(to_integer(unsigned(A2)) + 16)(0);	--down
+		--------		when "10" => z <= mapm(to_integer(unsigned(A2)) - 1 )(0);	--left
+		--------		when "11" => z <= mapm(to_integer(unsigned(A2)) + 1 )(0);	--right
+		--------		when others => z <= z;
+		--------	end case;
+		--------	n <= mapm(to_integer(unsigned(A2)))(1); -- detect ground
+		--------end if;
 			
 			if (IR2_op = "1001") then   -- set flag
 				if (IR2_am2(1) = '1') then
