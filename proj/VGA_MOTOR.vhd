@@ -243,12 +243,11 @@ begin
       tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
       if (blank = '0') then
-	if ((playerCoordRough(7 downto 4) < (Ypixel(7 downto 4))    ) or ((playerCoordRough(7 downto 4) = (Ypixel(7 downto 4))   and  (playerCoordDetailed(7 downto 4)) <= (Ypixel(3 downto 0))     ))) 
-		and ((playerCoordRough(7 downto 4) > (Ypixel(7 downto 4)) - 1) and ( (playerCoordRough(7 downto 4) = (Ypixel(7 downto 4)) - 1 and  (playerCoordDetailed(7 downto 4)) >= (Ypixel(3 downto 0)) - 1 )))	--Forgive me/Olav
-		and ((playerCoordRough(3 downto 0) < (Xpixel(3 downto 0))    ) and ((playerCoordRough(3 downto 0) = (Xpixel(7 downto 4)) and (playerCoordDetailed(3 downto 0)) <= (Xpixel(3 downto 0))))) 
-		and ((playerCoordRough(3 downto 0) > (Xpixel(3 downto 0)) - 1) and ((playerCoordRough(3 downto 0) = (Xpixel(7 downto 4)) - 1 and (playerCoordDetailed(3 downto 0)) >= (Xpixel(3 downto 0)) - 1 )))
-		and tileMem(768 + (16 *(Ypixel(3 downto 0))) + Xpixel(3 downto 0)  - (playerCoordDetailed)) != 255 then
-
+	if to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) <= Ypixel
+		&& (to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) > (Ypixel - 16))
+		&& (to_unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0)) <= Xpixel)
+		&& (to_unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0)) > (Xpixel - 16))
+		&& (tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff")) then		--Very tired when wrote this; check for errors
 	  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
 	else
 	  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
