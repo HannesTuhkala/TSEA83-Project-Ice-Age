@@ -243,11 +243,11 @@ begin
       tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
       if (blank = '0') then
-	if to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) <= Ypixel
-		&& (to_unsigned(playerCoordRough(7 downto 4) & playerCoordDetailed(7 downto 4)) > (Ypixel - 16))
-		&& (to_unsigned(playerCoordRough(3 downto 0) & playerCoordDetailed(3 downto 0)) <= Xpixel)
-		&& (to_unsigned(playerCoordRough(3 downt0 0) & playerCoordDetailed(3 downto 0)) > (Xpixel - 16))
-		&& (tileMem(to_integer(unsigned(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed))) != "ff")) then		--Very tired when wrote this; check for errors
+	if	   (to_unsigned(playerCoordRough(7 downto 4) < to_unsigned(Ypixel(7 downto 4))    ) || ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4))     && to_unsigned(playerCoordDetailed(7 downto 4)) <= to_unsigned(Ypixel(3 downto 0))     ))) 
+		&& (to_unsigned(playerCoordRough(7 downto 4) > to_unsigned(Ypixel(7 downto 4)) - 1) || ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4)) - 1 && to_unsigned(playerCoordDetailed(7 downto 4)) >= to_unsigned(Ypixel(3 downto 0)) - 1 )))	--Forgive me/Olav
+		&& (to_unsigned(playerCoordRough(3 downto 0) < to_unsigned(Xpixel(3 downto 0))    ) || ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4))     && to_unsigned(playerCoordDetailed(3 downto 0)) <= to_unsigned(Xpixel(3 downto 0))     ))) 
+		&& (to_unsigned(playerCoordRough(3 downto 0) > to_unsigned(Xpixel(3 downto 0)) - 1) || ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4)) - 1 && to_unsigned(playerCoordDetailed(3 downto 0)) >= to_unsigned(Xpixel(3 downto 0)) - 1 )))
+		&& tileMem(768 + (16 * to_unsigned(Ypixel(3 downto 0))) + Xpixel(3 downto 0)  - to_unsigned(playerCoordDetailed)) != 255 then
 	  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
 	else
 	  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
