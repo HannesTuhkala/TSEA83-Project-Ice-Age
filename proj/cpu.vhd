@@ -204,7 +204,6 @@ begin
 				res(7 downto 2) <= (others => '0');
 				res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
 			end if;
-			end if;
 
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
