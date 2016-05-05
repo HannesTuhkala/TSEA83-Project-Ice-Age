@@ -44,9 +44,11 @@ architecture behavioral of iceage is
 	signal playerDlink : std_logic_vector(7 downto 0);
 	signal playerRlink : std_logic_vector(7 downto 0);
 	signal tileLink : std_logic_vector(1 downto 0);
+	signal tmpCoordD : std_logic_vector(7 downto 0):= (others => '0');
+	signal tmpCoordR : std_logic_vector(7 downto 0):= "00010001";
 	
 begin
 	MAP1 : cpu port map(clk=>clk, joystick=>joystick, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
-	MAP2 : VGA_MOTOR port map(rst => rst,clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> playerRlink,playerCoordDetailed=>playerDlink, tileType=>tileLink);
+	MAP2 : VGA_MOTOR port map(rst => rst,clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> tmpCoordR ,playerCoordDetailed=>tmpCoordD, tileType=>tileLink);
 
 end behavioral;
