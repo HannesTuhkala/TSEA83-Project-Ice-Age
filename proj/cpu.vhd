@@ -40,7 +40,7 @@ architecture behavioral of cpu is
 		--denotes rock, "00" denotes ice. Don't use "11" or you'll draw sprites
     type mapm_t is array(0 to 255) of 
 			std_logic_vector(1 downto 0); 
-	signal mapm : mapm_t := (others => "00");
+	signal mapm : mapm_t := (others => "10");
 	
 	----FLAGS----   
 	signal z : std_logic := '0';

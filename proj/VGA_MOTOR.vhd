@@ -243,18 +243,19 @@ begin
       tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
       if (blank = '0') then
-if	   (to_unsigned(playerCoordRough(7 downto 4) < to_unsigned(Ypixel(7 downto 4))    ) or ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4))     and to_unsigned(playerCoordDetailed(7 downto 4)) <= to_unsigned(Ypixel(3 downto 0))     ))) 
-	and (to_unsigned(playerCoordRough(7 downto 4) > to_unsigned(Ypixel(7 downto 4)) - 1) or ( to_unsigned(playerCoordRough(7 downto 4) = to_unsigned(Ypixel(7 downto 4)) - 1 and to_unsigned(playerCoordDetailed(7 downto 4)) >= to_unsigned(Ypixel(3 downto 0)) - 1 )))	--Forgive me/Olav
-	and (to_unsigned(playerCoordRough(3 downto 0) < to_unsigned(Xpixel(3 downto 0))    ) or ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4))     and to_unsigned(playerCoordDetailed(3 downto 0)) <= to_unsigned(Xpixel(3 downto 0))     ))) 
-	and (to_unsigned(playerCoordRough(3 downto 0) > to_unsigned(Xpixel(3 downto 0)) - 1) or ( to_unsigned(playerCoordRough(3 downto 0) = to_unsigned(Xpixel(7 downto 4)) - 1 and to_unsigned(playerCoordDetailed(3 downto 0)) >= to_unsigned(Xpixel(3 downto 0)) - 1 )))
-	and tileMem(768 + (16 * to_unsigned(Ypixel(3 downto 0))) + Xpixel(3 downto 0)  - to_unsigned(playerCoordDetailed)) != 255 then
-  tilePixel <= tileMem(("11" & Ypixel(3 downto 0) & Xpixel(3 downto 0)) - playerCoordDetailed);	--Very tired when wrote this; check for errors/Olav
-else
-  tilePixel <= tileMem(to_integer(unsigned(tileType & Ypixel(3 downto 0) & Xpixel(3 downto 0))));
-end if;
-	tilePixel <=(others => '1');
+--if	    ((to_integer(unsigned(playerCoordRough(7 downto 4))) < to_integer(Ypixel(7 downto 4))    ) or ( to_integer(unsigned(playerCoordRough(7 downto 4))) = to_integer(Ypixel(7 downto 4))     and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)    ) )) 
+--	and ((to_integer(unsigned(playerCoordRough(7 downto 4))) > to_integer(Ypixel(7 downto 4)) - 1) or ( to_integer(unsigned(playerCoordRough(7 downto 4))) = to_integer(Ypixel(7 downto 4)) - 1 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) - 1 ))	--Forgive nme/Olav
+--	and ((to_integer(unsigned(playerCoordRough(3 downto 0))) < to_integer(Xpixel(3 downto 0))    ) or ( to_integer(unsigned(playerCoordRough(3 downto 0))) = to_integer(Xpixel(7 downto 4))     and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0))     )) 
+--	and ((to_integer(unsigned(playerCoordRough(3 downto 0))) > to_integer(Xpixel(3 downto 0)) - 1) or ( to_integer(unsigned(playerCoordRough(3 downto 0))) = to_integer(Xpixel(7 downto 4)) - 1 and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) - 1 ))
+--	and (to_integer(unsigned(tileMem(768 + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0))  - to_integer(unsigned(playerCoordDetailed))))) /= 255) then
+--  tilePixel <= tileMem(768 + to_integer(16 * Ypixel(3 downto 0)) + (16 *to_integer(Xpixel(3 downto 0))) - to_integer(unsigned(playerCoordDetailed)));	--Very tired when wrote this; check for errors/Olav
+--else
+  tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
+--end if;
+	--tilePixel <=(others => '1');
       else
-        tilePixel <= (others => '0');
+  	--tilePixel <= tileMem((16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
+	tilePixel <= (others => '0');
       end if;
     end if;
   end process;
