@@ -198,8 +198,11 @@ begin
 				res <= B2;
 			end if;
 			
-			if (IR2_op = "0010") then
+			if (IR2_op = "0010") then  --map editor
 				mapm(to_integer(unsigned(A2))) <= tmpB2;
+			else if (IR2_op = "0111") then   --collision detector
+				res(7 downto 2) <= (others => '0');
+				res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
 			end if;
 
 			if (IR2_op = "0011") then	--Add
@@ -240,17 +243,7 @@ begin
 				end if;
 			end if;
 			
-		--------if (IR2_op = "0111") then   -- Collision detector
-		--------	case tmpB2 is	-- detect rocks
-		--------		when "00" => z <= mapm(to_integer(unsigned(A2)) - 16)(0);	--up
-		--------		when "01" => z <= mapm(to_integer(unsigned(A2)) + 16)(0);	--down
-		--------		when "10" => z <= mapm(to_integer(unsigned(A2)) - 1 )(0);	--left
-		--------		when "11" => z <= mapm(to_integer(unsigned(A2)) + 1 )(0);	--right
-		--------		when others => z <= z;
-		--------	end case;
-		--------	n <= mapm(to_integer(unsigned(A2)))(1); -- detect ground
-		--------end if;
-			
+						
 			if (IR2_op = "1001") then   -- set flag
 				if (IR2_am2(1) = '1') then
 					z <= IR2_am2(0);
