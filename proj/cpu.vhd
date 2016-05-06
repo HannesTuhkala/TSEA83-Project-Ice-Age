@@ -83,7 +83,12 @@ architecture behavioral of cpu is
 		std_logic_vector(7 downto 0);	
 
 	signal reg : reg_t := (others => (others => '0'));
-	signal tmpB2 : std_logic_vector(1 downto 0);
+	signal tmpB2 : std_logic_vector(1 downto 0);	--deprecated
+
+
+	signal specialRegXYR : std_logic_vector(7 downto 0);
+	signal specialRegXYD : std_logic_vector(7 downto 0);
+	signal specialRegJoy : std_logic_vector(7 downto 0);
 
 	signal reg_enable : std_logic_vector(1 downto 0) := (others => '0');
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
@@ -134,18 +139,44 @@ begin
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
-			A2 <= reg(to_integer(unsigned(IR1_term1)));
+			
+			if to_integer(unsigned(IR1_term1)) < 64 then
+				A2 <= reg(to_integer(unsigned(IR1_term1)));
+			else case IR1_term1(1 downto 0) is 
+				"00" => A2 <= specialRegXYR;
+				"01" => A2 <= specialRegXYD;
+				"10" => A2 <= specialRegJoy;
+				when others => A2 <= (others => '0');
+				end case;
+			end if
+
+			
 			if ir1_am2 = "01" then
-				B2 <= reg(to_integer(unsigned(IR1_term2)));
+				if to_integer(unsigned(IR1_term2)) < 64 then
+					B2 <= reg(to_integer(unsigned(IR1_term2)));
+				else case IR1_term2(1 downto 0) is 
+					"00" => B2 <= specialRegXYR;
+					"01" => B2 <= specialRegXYD;
+					"10" => B2 <= specialRegJoy;
+					when others => B2 <= (others => '0');
+					end case;
+				end if; 
 			else 
 				b2 <= ir1_term2;
 			end if;
-			playerXYR <= reg(0);	-- Player Y and X position are stored in register 0 and 1.
-			playerXYD <= reg(1);
-			reg(2) <= joystick;		-- We store the joystick value in register 2.
+			playerXYR <= specialRegXYR;	-- Player Y and X position are stored in register 64 and 65.
+			playerXYD <= specialRegXYD;
+			specialRegJoy <= joystick;		-- We store the joystick value in register 66.
 
 			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110" or IR3_op = "0111") then
-				reg(to_integer(unsigned(IR3_fA))) <= res;
+				if to_integer(unsigned(IR3_fa)) < 64 then
+					reg(to_integer(unsigned(IR3_fA))) <= res;
+				else case IR3_fa(1 downto 0) is
+					"00" => specialRegXYR <= res;
+					"01" => specialRegXYD <= res;
+					when others null;
+					end case;
+				end if
 			end if;
 		end if;
 	END PROCESS;
