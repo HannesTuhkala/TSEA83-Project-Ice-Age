@@ -144,7 +144,7 @@ begin
 			playerXYD <= reg(1);
 			reg(2) <= joystick;		-- We store the joystick value in register 2.
 
-			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110") then
+			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110" or IR3_op = "0111") then
 				reg(to_integer(unsigned(IR3_fA))) <= res;
 			end if;
 		end if;

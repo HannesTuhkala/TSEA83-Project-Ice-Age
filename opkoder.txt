@@ -44,10 +44,8 @@ multiplicera reg(term1) med term2 (va), lagra i reg(utaddr)
 shifta reg(term1) höger om am2(1) = '1', annars vänster, med 1 steg. Lagrar i reg(utaddr) 
 
 0111 Col - collision
-Tar indata term1 = (4 bitar Y coord.  | 4 bitar X coord)
-	   term2 = (2 bitar dir, 00 = up, 01 = ner, 10 = vänster, 11 = höger)
-sätt z-flaggan hög om nästa är sten, annars låg.
-sätt n-flaggan hög om nuvarande är mark, annars låg.
+Tar indata term2 = (4 bitar Y coord.  | 4 bitar X coord)
+	   lagrar mapm(term2) i reg(utaddr)
 
 1000 Comp
 som Sub, men lagra inget värde i register
