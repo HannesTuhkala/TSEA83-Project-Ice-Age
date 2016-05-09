@@ -1,3 +1,4 @@
+#coding=utf-8
 import sys
 
 OP_CODES = {
@@ -72,13 +73,12 @@ def parseLine(line, currentLine, labels):
 		labels[words[0][0:-1]] = currentLine
 	else:
 		opcode = words[0]
-		outputLine += toBinary(int(OP_CODES[opcode]), 4)
-		# am1 används inte, så sätt till 00
-		outputLine += "00"
+		outputLine += getOP(opcode)
+		
 		if opcode == "NOP" or opcode == "HALT":
 			outputLine += toBinary(0, 26)
 		elif opcode == "SHIFT":
-			outputLine += toBinary(int(words[1]), 8)
+			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(0, 16)
 		elif opcode == "SETF":
@@ -110,12 +110,12 @@ def parseLine(line, currentLine, labels):
 			
 			outputLine += toBinary(0, 18)
 		elif opcode == "CMP":
-			outputLine += toBinary(int(words[1]), 8)
+			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(int(words[3]), 8)
 			outputLine += toBinary(0, 8)
 		else:
-			outputLine += toBinary(int(words[1]), 8)
+			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(int(words[3]), 8)
 			outputLine += toBinary(int(words[4]), 8)
@@ -137,6 +137,20 @@ def getMode(word):
 	else:
 		return "00"
 	
+def getOP(opcode):
+	if opcode in OP_CODES:
+		return toBinary(int(OP_CODES[opcode]), 4) + toBinary(0, 2)
+	else:
+		print("Invalid OP code '" + opcode + "'.")
+		sys.exit(-1)
+
+def getTerm1(word):
+	if int(word) >= 0 and int(word) < 33:
+		return toBinary(int(word), 8)
+	else:
+		print("You can only use a register between 0 and 32, you tried to use '" + word + "'.")
+		sys.exit(-1)
+
 if __name__ == "__main__":
 	if len(sys.argv) < 2:
 		print("Please specify an input file")
