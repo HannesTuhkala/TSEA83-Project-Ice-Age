@@ -82,14 +82,14 @@ def parseLine(line, currentLine, labels):
 			outputLine += getMode(words[2])
 			outputLine += toBinary(0, 16)
 		elif opcode == "SETF":
-			outputLine += toBinary(0, 8)
+			outputLine += addLeadingZeros(8)
 			outputLine += getMode(words[1])
-			outputLine += toBinary(0, 16)
+			outputLine += addLeadingZeros(16)
 		elif opcode == "COL":
 			outputLine += toBinary(int(words[1]), 8)
-			outputLine += toBinary(0, 2)
+			outputLine += addLeadingZeros(2)
 			outputLine += COL[words[2]]
-			outputLine += toBinary(0, 14)
+			outputLine += addLeadingZeros(14)
 		elif opcode == "BRF":
 			term1 = words[1]
 			
@@ -99,7 +99,7 @@ def parseLine(line, currentLine, labels):
 				outputLine += toBinary(int(term1), 8)
 			
 			outputLine += getMode(term1)
-			outputLine += toBinary(0, 16)
+			outputLine += addLeadingZeros(16)
 		elif opcode == "BRA":
 			term1 = words[1]
 			
@@ -108,12 +108,12 @@ def parseLine(line, currentLine, labels):
 			else:
 				outputLine += toBinary(int(term1), 8)
 			
-			outputLine += toBinary(0, 18)
+			outputLine += addLeadingZeros(18)
 		elif opcode == "CMP":
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(int(words[3]), 8)
-			outputLine += toBinary(0, 8)
+			outputLine += addLeadingZeros(8)
 		else:
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
@@ -150,6 +150,9 @@ def getTerm1(word):
 	else:
 		print("You can only use a register between 0 and 32, you tried to use '" + word + "'.")
 		sys.exit(-1)
+
+def addLeadingZeros(n):
+	return toBinary(0, n)
 
 if __name__ == "__main__":
 	if len(sys.argv) < 2:
