@@ -40,6 +40,26 @@ architecture Behavioral of VGA_MOTOR is
 
   signal        blank           : std_logic;                    -- blanking signal
 	
+--Sprite memory type
+	type sprite_mt is array (0 to 255) of std_logic_vector(7 downto 0);
+
+  signal sprite_mem is sprite_mt := (
+		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"ff",x"9f",x"bf",x"c2",x"c2",x"c2",x"c2",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",
+		x"9f",x"9f",x"ff",x"9f",x"9f",x"9f",x"a1",x"e6",x"e6",x"a1",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",
+		x"9f",x"ff",x"9f",x"9f",x"9f",x"9f",x"e6",x"e6",x"e6",x"e6",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",	
+		x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"c2",x"e6",x"e6",x"c2",x"c2",x"9f",x"bf",x"9f",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"c2",x"c2",x"e6",x"e6",x"c2",x"9f",x"9f",x"9f",x"9f",
+		x"9f",x"9f",x"bf",x"c2",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"e6",x"c2",x"c2",x"9f",x"9f",x"9f",
+		x"9f",x"bf",x"c2",x"c2",x"c2",x"e6",x"ef",x"ef",x"ef",x"ef",x"e6",x"c2",x"c2",x"c2",x"9f",x"9f",
+		x"9f",x"9f",x"c2",x"9f",x"c2",x"e6",x"ef",x"ef",x"ef",x"ef",x"e6",x"c2",x"9f",x"c2",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"e6",x"c2",x"9f",x"ff",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"c2",x"c2",x"ff",x"9f",x"9f",x"9f",
+		x"9f",x"bf",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"e6",x"c2",x"ff",x"9f",x"9f",x"9f",x"9f",
+		x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"e6",x"c2",x"c2",x"c2",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"c2",x"9f",x"9f",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"c2",x"c2",x"c2",x"c2",x"c2",x"9f",x"9f",
+		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f");
 
   -- Tile memory type
   type ram_t is array (0 to 1023) of std_logic_vector(7 downto 0);
@@ -255,7 +275,7 @@ begin
 --	and ((to_integer(unsigned(playerCoordRough(3 downto 0))) < to_integer(Xpixel(3 downto 0))    ) or ( to_integer(unsigned(playerCoordRough(3 downto 0))) = to_integer(Xpixel(7 downto 4))     and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0))     )) 
 --	and ((to_integer(unsigned(playerCoordRough(3 downto 0))) > to_integer(Xpixel(3 downto 0)) - 1) or ( to_integer(unsigned(playerCoordRough(3 downto 0))) = to_integer(Xpixel(7 downto 4)) - 1 and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) - 1 )) then
 	--and (to_integer(unsigned(tileMem(768 + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0))  - to_integer(unsigned(playerCoordDetailed))))) /= 255) then
-  tilePixel <= (others => '1');--tileMem(768 + to_integer(16 * Ypixel(3 downto 0)) + (to_integer(Xpixel(3 downto 0))) - to_integer(unsigned(playerCoordDetailed)));	--Very tired when wrote this; check for errors/Olav
+  tilePixel <= (others => '1');--sprite_mem(to_integer(16 * Ypixel(3 downto 0)) + (to_integer(Xpixel(3 downto 0))) - to_integer(unsigned(playerCoordDetailed)));	--Very tired when wrote this; check for errors/Olav
 else
   tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
 end if;
