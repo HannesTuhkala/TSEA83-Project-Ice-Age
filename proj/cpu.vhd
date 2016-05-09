@@ -140,27 +140,28 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			
-			if to_integer(unsigned(IR1_term1)) < 64 then
+			--if to_integer(unsigned(IR1_term1)) < 64 then
 				A2 <= reg(to_integer(unsigned(IR1_term1)));
-			else case IR1_term1(1 downto 0) is 
-				"00" => A2 <= specialRegXYR;
-				"01" => A2 <= specialRegXYD;
-				"10" => A2 <= specialRegJoy;
-				when others => A2 <= (others => '0');
-				end case;
-			end if
+			--else 
+				--case IR1_term1(1 downto 0) is 
+				--"00" => A2 <= specialRegXYR;
+				--"01" => A2 <= specialRegXYD;
+				--"10" => A2 <= specialRegJoy;
+				--when others => A2 <= (others => '0');
+				--end case;
+			--end if
 
 			
 			if ir1_am2 = "01" then
-				if to_integer(unsigned(IR1_term2)) < 64 then
+				--if to_integer(unsigned(IR1_term2)) < 64 then
 					B2 <= reg(to_integer(unsigned(IR1_term2)));
-				else case IR1_term2(1 downto 0) is 
-					"00" => B2 <= specialRegXYR;
-					"01" => B2 <= specialRegXYD;
-					"10" => B2 <= specialRegJoy;
-					when others => B2 <= (others => '0');
-					end case;
-				end if; 
+				--else case IR1_term2(1 downto 0) is 
+				--	"00" => B2 <= specialRegXYR;
+				--	"01" => B2 <= specialRegXYD;
+				--	"10" => B2 <= specialRegJoy;
+				--	when others => B2 <= (others => '0');
+				--	end case;
+				--end if; 
 			else 
 				b2 <= ir1_term2;
 			end if;
@@ -169,14 +170,14 @@ begin
 			specialRegJoy <= joystick;		-- We store the joystick value in register 66.
 
 			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110" or IR3_op = "0111") then
-				if to_integer(unsigned(IR3_fa)) < 64 then
+				--if to_integer(unsigned(IR3_fa)) < 64 then
 					reg(to_integer(unsigned(IR3_fA))) <= res;
-				else case IR3_fa(1 downto 0) is
-					"00" => specialRegXYR <= res;
-					"01" => specialRegXYD <= res;
-					when others null;
-					end case;
-				end if
+				--else case IR3_fa(1 downto 0) is
+				--	"00" => specialRegXYR <= res;
+				--	"01" => specialRegXYD <= res;
+				--	when others null;
+				--	end case;
+				--end if
 			end if;
 		end if;
 	END PROCESS;
