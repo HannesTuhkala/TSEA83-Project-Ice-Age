@@ -1,0 +1,81 @@
+:L1:comp joystick, 0 --z set high if no joystick signal
+
+branch on flag (z, L1)	--keep waiting for joystick values
+
+move joystick, var_dir
+
+move val 16 to var_step_count
+
+comp var_dir, -up-
+branch on flag (z, L2)
+comp var_dir, -right-
+branch on flag(z, L3)
+comp var_dir, -down- 
+brach on flag (z, L4)
+branch unconditionally(L5)
+
+:L6: move -wait time- to var_count	--value less than 255 still enough for reasonable speed. 255 clock cycles per pixel would yield speed little over 2 tiles/s
+:L7: sub var_count, 1
+comp var_count, 0
+branch on flag (z, L8)
+Branch unconditionally to L7
+:L8:comp var_dir, -up-
+branch on flag (z, L2.2)
+comp var_dir, -right-
+branch on flag(z, L3.2)
+comp var_dir, -down- 
+brach on flag (z, L4.2)
+branch unconditionally(L5.2)
+
+
+:L2:			--up
+
+tileAccess (PCRaddr) to var_tile
+comp var_tile, 3 		--goal
+branch on flag (z, -Line_goal_reached- ) 
+comp var_tile, 2 		--reached ground
+branch on flag (z, L1)
+sub PCR, 16 store int var_temp 
+tile access(temp) to var_tile
+comp var_tile, 1		--hit rock
+branch on flag (z, L1)
+
+
+PCR = PCR - 16
+PCD = x"E0"
+branch unconditionally L6
+:L2.2:
+sub var_step_count, 1
+branch on flag (z, L2)
+pcd -= 16
+branch unconditionally L6
+
+--
+
+:L3:			--right
+
+PCD = 1
+
+:L3.2:
+cycle 
+pcd ++
+--
+
+:L4:			--down
+
+pcd = 16
+
+:L4.2:
+cycle 
+pcd += 16
+--
+
+:L5:			--left
+
+PCR = PCR -1
+PCD = PCD + 15
+
+:L5.2:
+cycle 
+pcd -= 1
+--
