@@ -2,6 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
+
 entity cpu is
 	port (
 		clk: in std_logic;
@@ -24,9 +25,6 @@ architecture behavioral of cpu is
 		std_logic_vector(31 downto 0);
 	-- Reset all bits on all addresses
 	signal pm : pm_t := (others => (others => '0'));
-	
-	-- NOTE: pm_instruction is the current instruction taken from program memory
-	signal pm_instruction : std_logic_vector(31 downto 0); -- Our instruction, which is 32 bits long.
 	--------------------------------------------------
 	--------------END OF PROGRAM MEMORY---------------
 	--------------------------------------------------
@@ -185,20 +183,6 @@ begin
 	------------- END Register --------------
 
 	-------- END Program Memory -------
-
-	----- Jump logic
-	-------- MUX 1 --------						--needs fix YES
-	--with ? select
-	--mux_1 <= pm_instruction when ?,
-	--		"0000" when others;
-	------- END MUX 1 -------
-
-	----- Stall logic
-	-------- MUX 2 --------						--needs fix YES
-	--with ? select 
-	--mux_2 <= ir1 when ?,
-	--		"0000" when others;
-	------- END MUX 2 -------
 
 	--------- Internal Registers -------
 	PROCESS(clk)

@@ -41,23 +41,23 @@ architecture Behavioral of VGA_MOTOR is
 --Sprite memory type
 	type sprite_mt is array (0 to 255) of std_logic_vector(7 downto 0);
 
-  signal sprite_mem is sprite_mt := (
-		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"ff",x"9f",x"bf",x"c2",x"c2",x"c2",x"c2",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",
-		x"9f",x"9f",x"ff",x"9f",x"9f",x"9f",x"a1",x"e6",x"e6",x"a1",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",
-		x"9f",x"ff",x"9f",x"9f",x"9f",x"9f",x"e6",x"e6",x"e6",x"e6",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",	
-		x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"c2",x"e6",x"e6",x"c2",x"c2",x"9f",x"bf",x"9f",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"c2",x"c2",x"e6",x"e6",x"c2",x"9f",x"9f",x"9f",x"9f",
-		x"9f",x"9f",x"bf",x"c2",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"e6",x"c2",x"c2",x"9f",x"9f",x"9f",
-		x"9f",x"bf",x"c2",x"c2",x"c2",x"e6",x"ef",x"ef",x"ef",x"ef",x"e6",x"c2",x"c2",x"c2",x"9f",x"9f",
-		x"9f",x"9f",x"c2",x"9f",x"c2",x"e6",x"ef",x"ef",x"ef",x"ef",x"e6",x"c2",x"9f",x"c2",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"e6",x"c2",x"9f",x"ff",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"ef",x"ef",x"e6",x"c2",x"c2",x"ff",x"9f",x"9f",x"9f",
-		x"9f",x"bf",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"e6",x"c2",x"ff",x"9f",x"9f",x"9f",x"9f",
-		x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"e6",x"c2",x"c2",x"c2",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"e6",x"e6",x"e6",x"c2",x"9f",x"9f",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"c2",x"c2",x"c2",x"c2",x"c2",x"c2",x"9f",x"9f",
-		x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"bf",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f",x"9f");
+  signal sprite_mem : sprite_mt := (
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"71",x"00",x"00",x"71",x"00",x"00",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"da",x"da",x"da",x"da",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"da",x"da",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"00",x"00",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"00",x"00",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"ff",x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",x"ff",x"ff",x"ff",
+		x"ff",x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",x"ff",
+		x"ff",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"ff",
+		x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",
+		x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",
+		x"ff",x"00",x"00",x"20",x"00",x"00",x"00",x"ff",x"ff",x"00",x"00",x"00",x"20",x"00",x"00",x"ff",
+		x"ff",x"b2",x"b6",x"b2",x"b2",x"b6",x"ff",x"ff",x"ff",x"ff",x"b6",x"b2",x"b2",x"b6",x"b2",x"ff");
 
   -- Tile memory type
   type ram_t is array (0 to 1023) of std_logic_vector(7 downto 0);
@@ -251,18 +251,31 @@ begin
       tileSlot(7 downto 4) <= std_logic_vector(Ypixel(7 downto 4));		-- find tile over which pixel rests
       tileSlot(3 downto 0) <= std_logic_vector(Xpixel(7 downto 4));		--
     
-      if (Xpixel < 256 and Xpixel < 256) then
+      if (Xpixel < 256 and Ypixel < 256) then
 	if	((to_integer(unsigned(playerCoordRough))      = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)) ) or
 		 (to_integer(unsigned(playerCoordRough)) + 16 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)) ) or
 		 (to_integer(unsigned(playerCoordRough)) +  1 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) ) or
-		 (to_integer(unsigned(playerCoordRough)) + 17 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) ))
-		and (mapm(to_unsigned(Ypixel(7 downto 4)) * 16 + to_unsigned(Xpixel(7 downto 4)) ) /= "11" or to_unsigned(Ypxel(3 downto 0)) > 9 ) then
-		--and (sprite_mem(to_integer(16 * Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - to_integer(unsigned(playerCoordDetailed))) /= x"ff") then
-  	    tilePixel <= sprite_mem(to_integer(16 * Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)));	--Very tired when wrote this; check for errors/Olav
+		 (to_integer(unsigned(playerCoordRough)) + 17 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) ))and (to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and(sprite_mem( 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0))) ) /= x"ff") then
+
+--	if	(to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and (to_integer(unsigned(playerCoordRough))      = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)) ) and(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0)))      ) /= x"ff") then
+			tilePixel <= sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+				--upper left square
+
+--	elsif	(to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and (to_integer(unsigned(playerCoordRough)) + 16 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)) ) and(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0)))  + 16) /= x"ff") then
+--			tilePixel <= sprite_mem(16 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+				--lower left square
+
+--	elsif	(to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and (to_integer(unsigned(playerCoordRough)) +  1 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) ) and(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0)))  +  1) /= x"ff") then
+--			tilePixel <= sprite_mem(1 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+				--upper right square
+
+--	elsif	(to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and (to_integer(unsigned(playerCoordRough)) + 17 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >= to_integer(Xpixel(3 downto 0)) ) and(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0))  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0)))  + 17) /= x"ff") then
+--			tilePixel <= sprite_mem(17 +16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+				--lower righ square
 	else
-	    tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
+	    tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)) );
 	end if;
-      elsif (Xpixel <= 640 and Ypixel <= 480)
+      elsif (Xpixel < 608 and Ypixel < 458) then
 	tilePixel <= tileMem(256 + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
       else
 	tilePixel <= (others => '0');
