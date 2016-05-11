@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity iceage is
 	port (
 		clk : in std_logic;
-		joystickInStream: in std_logic;
+		Led : out std_logic_vector(7 downto 0);
 		rst : in std_logic;
 		vgaRed: out std_logic_vector(2 downto 0);
 		vgaGreen : out std_logic_vector(2 downto 0);
@@ -50,8 +50,9 @@ architecture behavioral of iceage is
 	signal XYBstream : std_logic_vector(3 downto 0):="0000";
 	signal counter : std_logic_vector(5 downto 0) := (others => '0');
 	
+	
 begin
-
+	Led<= "11110000";
 	PROCESS(clk)
 	BEGIN
 		if (rising_edge(clk)) then
@@ -59,13 +60,13 @@ begin
 				joylink(3 downto 0) <= XYBstream; 
 				counter <= (others => '0');
 			elsif counter = 14 then 
-				XYBstream(3) <= joystickInStream;
+			--	XYBstream(3) <= joystickInStream;
 			elsif counter = 15 then
-				XYBstream(2) <= joystickInStream;
+			--	XYBstream(2) <= joystickInStream;
 			elsif counter = 30 then
-				XYBstream(1) <= joystickInStream;
+			--	XYBstream(1) <= joystickInStream;
 			elsif counter = 31 then
-				XYBstream(0) <= joystickInStream;  
+			--	XYBstream(0) <= joystickInStream;  
 			end if; 	
 			counter <= counter + 1;		
 		end if;
