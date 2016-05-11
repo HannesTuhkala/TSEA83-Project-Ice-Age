@@ -27,6 +27,7 @@ comp var_dir, -down-
 brach on flag (z, L4.2)
 branch unconditionally(L5.2)
 
+--------------------------------------------------------
 
 :L2:			--up
 
@@ -35,6 +36,10 @@ comp var_tile, 3 		--goal
 branch on flag (z, -Line_goal_reached- ) 
 comp var_tile, 2 		--reached ground
 branch on flag (z, L1)
+
+comp PCR, 16
+branch on flag (n, L1)		--hit ceiling 
+
 sub PCR, 16 store int var_temp 
 tile access(temp) to var_tile
 comp var_tile, 1		--hit rock
@@ -50,27 +55,75 @@ branch on flag (z, L2)
 pcd -= 16
 branch unconditionally L6
 
---
+-------------------------------------------------------------
 
 :L3:			--right
+
+tileAccess (PCRaddr) to var_tile
+comp var_tile, 3 		--goal
+branch on flag (z, L9) 
+comp var_tile, 2 		--reached ground
+branch on flag (z, L1)
+
+shift pcr left by 4, move to var_temp 
+comp var_temp, x"F0"
+branch on flag (z, L1)		--hit right wall
+
+add PCR, 1 store int var_temp 
+tile access(var_temp) to var_tile
+comp var_tile, 1		--hit rock
+branch on flag (z, L1)
+
 
 PCD = 1
 
 :L3.2:
 cycle 
 pcd ++
---
+--------------------------------------------------------------
 
 :L4:			--down
+
+tileAccess (PCRaddr) to var_tile
+comp var_tile, 3 		--goal
+branch on flag (z, -Line_goal_reached- ) 
+comp var_tile, 2 		--reached ground
+branch on flag (z, L1)
+
+move x"ef" to var_temp
+comp var_temp, PCR
+branch on flag (n, L1)		--hit floor
+
+add PCR, 16 store int var_temp 
+tile access(temp) to var_tile
+comp var_tile, 1		--hit rock
+branch on flag (z, L1)
+
 
 pcd = 16
 
 :L4.2:
 cycle 
 pcd += 16
---
+------------------------------------------------------
 
 :L5:			--left
+
+tileAccess (PCRaddr) to var_tile
+comp var_tile, 3 		--goal
+branch on flag (z, L9) 
+comp var_tile, 2 		--reached ground
+branch on flag (z, L1)
+
+Shift PCR left by 4, store in var_temp
+comp var_temp, 0
+branch on flag (z, L1) 		--hit left wall
+
+sub PCR, 1 store int var_temp 
+tile access(temp) to var_tile
+comp var_tile, 1		--hit rock
+branch on flag (z, L1)
+
 
 PCR = PCR -1
 PCD = PCD + 15
@@ -78,4 +131,9 @@ PCD = PCD + 15
 :L5.2:
 cycle 
 pcd -= 1
---
+------------------------------------------------------
+
+:L9: 			--Goal reached
+
+move -player start position- to PCR
+branch unconditionally to L1		--restart game
