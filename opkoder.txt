@@ -33,12 +33,12 @@ Lagrar term2 till register(utaddr).
 MOVE <utaddr> <term2>
 
 0010 mapStore (MAPS)
-Lagra term2 (va) i mapm address reg(term 1)
-MAPS <term1> <mode> <term2>
+Lagra term2 (va) i mapm address reg(utaddr)
+MAPS <utaddr> <mode> <term2>
 
 0011 ADD
 Addera reg(term1) med term2 (va), lagra i reg(utaddr)
-sätter n hög om summan överskrider 255, annars låg.
+Sätter n = '1' om summan överskrider 255, annars n = '0'.
 ADD <term1> <mode> <term2> <utaddr>
 
 0100 SUB
