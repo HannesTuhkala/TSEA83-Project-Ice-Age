@@ -48,9 +48,8 @@ Multiplicerar reg(term1) med term2 (va), lagra i reg(utaddr)
 MULT <term1> <mode> <term2> <utaddr>
 
 0110 SHIFT
-Shifta reg(term1) höger om am2(1) = '1', annars vänster, med 1 steg. Lagrar i reg(utaddr).
-Aritmetisk shift om am2(0) = am2(1) = '1'.
-SHIFT <term1> <LEFT, RIGHT, ARIT> <utaddr>
+Shifta reg(term1) vänster med 4 bitar, lagra i reg(utaddr)
+SHIFT <term1> <utaddr>
 
 0111 Collision (COL)
 Tar indata term2 = (4 bitar Y coord.  | 4 bitar X coord)
@@ -61,12 +60,12 @@ COL
 Fungerar som SUB, men lagrar inget värde i register, använder alltså inte utaddr
 CMP <term1> <mode> <term2>
 
-1001 Set flag (SETF) - z:n
+1001 Set flag (SETF) - z/n
 am2 = 10 -> z <= 0 (Z0)
 am2 = 11 -> z <= 1 (Z1)
 am2 = 00 -> n <= 0 (N0)
 am2 = 01 -> n <= 1 (N1)
-SETF <Z0,Z1,N0,N1>
+SETF <Z0, Z1, N0, N1>
 
 1010 Branch on Flag (BRF) - z/n
 om ((am2(0) = 0 && z = 1) || (am2(0) = 1 && n = 1))
