@@ -20,9 +20,6 @@ OP_CODES = {
 MODES = {
 	"IMED" : "00",
 	"DIR" : "01",
-	"LEFT" : "00",
-	"RIGHT" : "10",
-	"ARIT" : "11",
 	"Z0" : "10",
 	"Z1" : "11",
 	"N0" : "00",
@@ -38,11 +35,13 @@ COL = {
 	"RIGHT" : "11",
 }
 
+lines = {}
+outputcode = {}
+labels = {}
+currentLine = 0
+
 def assemble(filename):
-	currentLine = 0
-	lines = {}
-	outputcode = {}
-	labels = {}
+	global currentLine, lines, outputcode, labels
 
 	with open(filename) as f:
 		lines = f.readlines()
@@ -88,7 +87,7 @@ def parseLine(line, currentLine, labels):
 		elif opcode == "SHIFT":
 			outputLine += getTerm1(words[1])
 			outputLine += addZeros(10)
-			outputLine += toBinary(int(words[3]), 8)
+			outputLine += toBinary(int(words[2]), 8)
 		elif opcode == "SETF":
 			outputLine += addZeros(8)
 			outputLine += getMode(words[1])
@@ -100,22 +99,10 @@ def parseLine(line, currentLine, labels):
 			outputLine += addZeros(14)
 		elif opcode == "BRF":
 			outputLine += getTerm1(words[1])
-			
-			#if term1 in labels:
-			#	outputLine += toBinary(labels[term1], 8)
-			#else:
-			#	outputLine += toBinary(int(term1), 8)
-			
-			outputLine += getMode(term1)
+			outputLine += getMode(words[2])
 			outputLine += addZeros(16)
 		elif opcode == "BRA":
 			outputLine += getTerm1(words[1])
-
-			#if term1 in labels:
-			#	outputLine += toBinary(int(labels[term1]), 8)
-			#else:
-			#	outputLine += toBinary(int(term1), 8)
-			
 			outputLine += addZeros(18)
 		elif opcode == "CMP" or opcode == "MAPS":
 			outputLine += getTerm1(words[1])
@@ -153,18 +140,15 @@ def getOP(opcode):
 		sys.exit(-1)
 
 def getTerm1(word):
-	if int(word) >= 0 and int(word) < 33:
-		if word in labels:
-			return toBinary(labels[word], 8)
-		else:
-			try:
-				return toBinary(int(word), 8)
-			except ValueError:
-				print("'" + word + "' is not a valid label.")
-				sys.exit(-1)
+	if word in labels:
+		return toBinary(labels[word], 8)
 	else:
-		print("You can only use a register between 0 and 32, you tried to use '" + word + "'.")
-		sys.exit(-1)
+		try:
+			if int(word) >= 0 and int(word) < 64:
+				return toBinary(int(word), 8)
+		except ValueError:
+			print("'" + word + "' is not a valid label.")
+			sys.exit(-1)
 
 def addZeros(n):
 	return toBinary(0, n)
