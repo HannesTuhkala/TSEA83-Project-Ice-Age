@@ -29,7 +29,8 @@
 # (Or proj2.simc, proj2.sim, etc, depending on the name of the
 # project)
 
-XILINX_INIT = source /sw/xilinx/ise_12.4i/ISE_DS/settings64.sh;
+#XILINX_INIT = source /sw/xilinx/ise_12.4i/ISE_DS/settings64.sh;
+XILINX_INIT = source /sw/xilinx/ise_14.7i/14.7/ISE_DS/settings64.sh;
 PART=xc6slx16-3-csg324
 
 

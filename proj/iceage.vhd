@@ -3,8 +3,11 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity iceage is
 	port (
+		SS : out std_logic;
+		MOSI : out std_logic;
+		MISO : out std_logic;
+		SCLK : out std_logic;
 		clk : in std_logic;
-		Led : out std_logic_vector(7 downto 0);
 		rst : in std_logic;
 		vgaRed: out std_logic_vector(2 downto 0);
 		vgaGreen : out std_logic_vector(2 downto 0);
@@ -52,7 +55,10 @@ architecture behavioral of iceage is
 	
 	
 begin
-	Led<= "11110000";
+	SS<='1';
+	MOSI<='1';
+	MISO<='1';
+	SCLK<='1';
 --------PROCESS(clk)
 --------BEGIN
 --------	if (rising_edge(clk)) then

@@ -2,7 +2,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
-
 entity cpu is
 	port (
 		clk: in std_logic;
@@ -87,6 +86,7 @@ architecture behavioral of cpu is
 	signal specialRegXYR : std_logic_vector(7 downto 0);
 	signal specialRegXYD : std_logic_vector(7 downto 0);
 	signal specialRegJoy : std_logic_vector(7 downto 0);
+
 
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
 	signal B2 : std_logic_vector(7 downto 0) := (others => '0');
@@ -210,7 +210,7 @@ begin
 			if (stall = '0') then
 				--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
 				if branch = '1' then
-					PC <= to_integer(unsigned(PC1)) + to_integer(unsigned(IR2(25 downto 17))) - 128;
+					PC <= unsigned(PC1) + unsigned(IR2(25 downto 17));
 				else
 					PC <= PC + 1;
 				end if;
