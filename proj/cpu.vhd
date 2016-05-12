@@ -203,7 +203,7 @@ begin
 				branch <= '0';
 			end if;
 		
-			PC1 <= PC + 128; -- delay
+			PC1 <= PC; -- delay
 
 			--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
 			if branch = '1' then
