@@ -67,7 +67,7 @@ architecture behavioral of cpu is
 	---------------PROGRAM COUNTER--------------------
 	--------------------------------------------------
 	signal stall : bit := '0';
-	--signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
+	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
 	signal PC : std_logic_vector(8 downto 0) := (others => '0');
 	signal PC1 : std_logic_vector(8 downto 0) := (others => '0');
 	--------------------------------------------------
@@ -210,7 +210,7 @@ begin
 			if (stall = '0') then
 				--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
 				if branch = '1' then
-					PC <= PC1 + IR2(25 downto 17);
+					PC <= to_integer(unsigned(PC1)) + to_integer(unsigned(IR2(25 downto 17))) - 128;
 				else
 					PC <= PC + 1;
 				end if;
