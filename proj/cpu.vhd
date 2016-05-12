@@ -202,11 +202,11 @@ begin
 				branch <= '0';
 			end if;
 		
-			PC1 <= PC; -- delay
+			PC1 <= PC + 128; -- delay
 
 			--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
 			if branch = '1' then
-				PC <= to_integer(unsigned(PC1)) + to_integer(unsigned(IR2(25 downto 17))) - 128;
+				PC <= PC1 + IR2(25 downto 17);
 			else
 				PC <= PC + 1;
 			end if;
