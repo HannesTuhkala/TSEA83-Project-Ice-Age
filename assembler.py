@@ -84,6 +84,11 @@ def parseLine(line, currentLine, labels):
 			outputLine += addZeros(10)
 			outputLine += toBinary(int(words[1]), 8)
 			outputLine += toBinary(int(words[2]), 8)
+		elif opcode == "MAPS":
+			outputLine += addZeros(8)
+			outputLine += getMode(words[2])
+			outputLine += toBinary(int(words[3]), 8)
+			outputLine += toBinary(int(words[1]), 8)
 		elif opcode == "SHIFT":
 			outputLine += getTerm1(words[1])
 			outputLine += addZeros(10)
@@ -104,7 +109,7 @@ def parseLine(line, currentLine, labels):
 		elif opcode == "BRA":
 			outputLine += getTerm1(words[1])
 			outputLine += addZeros(18)
-		elif opcode == "CMP" or opcode == "MAPS":
+		elif opcode == "CMP":
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(int(words[3]), 8)
