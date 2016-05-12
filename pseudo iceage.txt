@@ -1,10 +1,7 @@
-:L1:comp joystick, 0 --z set high if no joystick signal
-
-branch on flag (z, L1)	--keep waiting for joystick values
-
+:L1:comp joystick, -still- --z set high if no joystick signal
 move joystick, var_dir
-
-move val 16 to var_step_count
+branch on flag (z, L1)	--keep waiting for joystick values
+move val 16 to var_step_count		
 
 comp var_dir, -up-
 branch on flag (z, L2)
@@ -50,9 +47,8 @@ PCR = PCR - 16
 PCD = x"E0"
 branch unconditionally L6
 :L2.2:
-sub var_step_count, 1
-branch on flag (z, L2)
 pcd -= 16
+branch on flag (z, L2)
 branch unconditionally L6
 
 -------------------------------------------------------------
@@ -76,10 +72,18 @@ branch on flag (z, L1)
 
 
 PCD = 1
-
+branch unconditionally L6
 :L3.2:
-cycle 
-pcd ++
+comp pcd, 16 
+branch on flag z, L2
+comp pcd, 15
+branch on flag z, L3.3
+pcd += 1
+branch unconditionally L6
+:L3.3:
+move 0 to pcd
+PCR += 1
+branch unconditionally L6
 --------------------------------------------------------------
 
 :L4:			--down
@@ -103,15 +107,21 @@ branch on flag (z, L1)
 pcd = 16
 
 :L4.2:
-cycle 
+PCD = x"10"
+branch unconditionally L6
+:L2.2:
 pcd += 16
+branch on flag (n, L4.3)
+branch unconditionally L6
+:L4.3:
+PCR += 16
 ------------------------------------------------------
 
 :L5:			--left
 
 tileAccess (PCRaddr) to var_tile
 comp var_tile, 3 		--goal
-branch on flag (z, L9) 
+branch on flag (z, L9)
 comp var_tile, 2 		--reached ground
 branch on flag (z, L1)
 
