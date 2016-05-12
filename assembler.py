@@ -4,6 +4,7 @@ import sys
 OP_CODES = {
 	"NOP" : 0,
 	"MOVE" : 1,
+	"MAPS" : 2,
 	"ADD" : 3,
 	"SUB" : 4,
 	"MULT" : 5,
@@ -80,44 +81,47 @@ def parseLine(line, currentLine, labels):
 		
 		if opcode == "NOP" or opcode == "HALT":
 			outputLine += toBinary(0, 26)
+		elif opcode == "MOVE":
+			outputLine += addZeros(10)
+			outputLine += toBinary(int(words[1]), 8)
+			outputLine += toBinary(int(words[2]), 8)
 		elif opcode == "SHIFT":
 			outputLine += getTerm1(words[1])
-			outputLine += getMode(words[2])
-			outputLine += addLeadingZeros(8)
+			outputLine += addZeros(10)
 			outputLine += toBinary(int(words[3]), 8)
 		elif opcode == "SETF":
-			outputLine += addLeadingZeros(8)
+			outputLine += addZeros(8)
 			outputLine += getMode(words[1])
-			outputLine += addLeadingZeros(16)
+			outputLine += addZeros(16)
 		elif opcode == "COL":
 			outputLine += toBinary(int(words[1]), 8)
-			outputLine += addLeadingZeros(2)
+			outputLine += addZeros(2)
 			outputLine += COL[words[2]]
-			outputLine += addLeadingZeros(14)
+			outputLine += addZeros(14)
 		elif opcode == "BRF":
-			term1 = words[1]
+			outputLine += getTerm1(words[1])
 			
-			if term1 in labels:
-				outputLine += toBinary(labels[term1], 8)
-			else:
-				outputLine += toBinary(int(term1), 8)
+			#if term1 in labels:
+			#	outputLine += toBinary(labels[term1], 8)
+			#else:
+			#	outputLine += toBinary(int(term1), 8)
 			
 			outputLine += getMode(term1)
-			outputLine += addLeadingZeros(16)
+			outputLine += addZeros(16)
 		elif opcode == "BRA":
-			term1 = words[1]
+			outputLine += getTerm1(words[1])
+
+			#if term1 in labels:
+			#	outputLine += toBinary(int(labels[term1]), 8)
+			#else:
+			#	outputLine += toBinary(int(term1), 8)
 			
-			if term1 in labels:
-				outputLine += toBinary(int(labels[term1]), 8)
-			else:
-				outputLine += toBinary(int(term1), 8)
-			
-			outputLine += addLeadingZeros(18)
-		elif opcode == "CMP":
+			outputLine += addZeros(18)
+		elif opcode == "CMP" or opcode == "MAPS":
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
 			outputLine += toBinary(int(words[3]), 8)
-			outputLine += addLeadingZeros(8)
+			outputLine += addZeros(8)
 		else:
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
@@ -150,12 +154,19 @@ def getOP(opcode):
 
 def getTerm1(word):
 	if int(word) >= 0 and int(word) < 33:
-		return toBinary(int(word), 8)
+		if word in labels:
+			return toBinary(labels[word], 8)
+		else:
+			try:
+				return toBinary(int(word), 8)
+			except ValueError:
+				print("'" + word + "' is not a valid label.")
+				sys.exit(-1)
 	else:
 		print("You can only use a register between 0 and 32, you tried to use '" + word + "'.")
 		sys.exit(-1)
 
-def addLeadingZeros(n):
+def addZeros(n):
 	return toBinary(0, n)
 
 if __name__ == "__main__":
