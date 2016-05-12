@@ -53,24 +53,24 @@ architecture behavioral of iceage is
 	
 begin
 	Led<= "11110000";
-	PROCESS(clk)
-	BEGIN
-		if (rising_edge(clk)) then
-			if counter = 39 then
-				joylink(3 downto 0) <= XYBstream; 
-				counter <= (others => '0');
-			elsif counter = 14 then 
-			--	XYBstream(3) <= joystickInStream;
-			elsif counter = 15 then
-			--	XYBstream(2) <= joystickInStream;
-			elsif counter = 30 then
-			--	XYBstream(1) <= joystickInStream;
-			elsif counter = 31 then
-			--	XYBstream(0) <= joystickInStream;  
-			end if; 	
-			counter <= counter + 1;		
-		end if;
-	END PROCESS;
+--------PROCESS(clk)
+--------BEGIN
+--------	if (rising_edge(clk)) then
+--------		if counter = 39 then
+--------			joylink(3 downto 0) <= XYBstream; 
+--------			counter <= (others => '0');
+--------		elsif counter = 14 then 
+--------		--	XYBstream(3) <= joystickInStream;
+--------		elsif counter = 15 then
+--------		--	XYBstream(2) <= joystickInStream;
+--------		elsif counter = 30 then
+--------		--	XYBstream(1) <= joystickInStream;
+--------		elsif counter = 31 then
+--------		--	XYBstream(0) <= joystickInStream;  
+--------		end if; 	
+--------		counter <= counter + 1;		
+--------	end if;
+--------END PROCESS;
 
 
 	MAP1 : cpu port map(clk=>clk, joystick=>joylink, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
