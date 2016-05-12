@@ -65,7 +65,6 @@ architecture behavioral of cpu is
 	--------------------------------------------------
 	---------------PROGRAM COUNTER--------------------
 	--------------------------------------------------
-	signal stall : bit := '0';
 	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
 	signal PC : std_logic_vector(8 downto 0) := (others => '0');
 	signal PC1 : std_logic_vector(8 downto 0) := (others => '0');
@@ -100,8 +99,6 @@ architecture behavioral of cpu is
 	signal ir1 : std_logic_vector(31 downto 0) := (others => '0');
 	signal ir2 : std_logic_vector(31 downto 0) := (others => '0');
 	signal ir3 : std_logic_vector(31 downto 0) := (others => '0');
-	--signal mux_1 : std_logic_vector(31 downto 0) := (others => '0');
-	--signal mux_2 : std_logic_vector(31 downto 0) := (others => '0');
 	
 	-------------------ALIAS IR-------------------------
 	alias IR1_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
@@ -205,15 +202,13 @@ begin
 				branch <= '0';
 			end if;
 		
-			PC1 <= PC; -- delay
+			PC1 <= PC + 128; -- delay
 
-			if (stall = '0') then
-				--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
-				if branch = '1' then
-					PC <= unsigned(PC1) + unsigned(IR2(25 downto 17));
-				else
-					PC <= PC + 1;
-				end if;
+			--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
+			if branch = '1' then
+				PC <= PC1 + IR2(25 downto 17);
+			else
+				PC <= PC + 1;
 			end if;
 		end if;
 	END PROCESS;
@@ -239,6 +234,11 @@ begin
 
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
+				if (to_integer(unsigned(A2)) + to_integer(unsigned(B2)) > 256)then 
+					n <= '1';
+				else
+					n <= '0';
+				end if;
 			end if;
 			
 			if (IR2_op = "0100" or IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value

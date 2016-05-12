@@ -1,67 +1,84 @@
-﻿0000 Nop
-0001 move
-0010 mapStore
-0011 Add
-0100 Sub
-0101 Mult
-0110 Shift
-0111 Col - collision
-1000 Comp
-1001 Set flag - z:n
-1010 Branch on Flag - z:n
-1011 branch
-1111 Halt
+﻿0000 NOP
+0001 MOVE
+0010 mapStore (MAPS)
+0011 ADD
+0100 SUB
+0101 MULT
+0110 SHIFT
+0111 Collision (COL)
+1000 Compare (CMP)
+1001 Set flag - z:n (SETF)
+1010 Branch on Flag - z:n (BRF)
+1011 Branch (BRA)
+1111 HALT
+
 
 31           28 27          26 25           18 17         16  15            8 7              0
 [4 bitar opkod] [2 bitar am1 ] [8 bitar term1] [2 bitar am2]  [8 bitar term2] [8 bitar utaddr]
 
-Term 1 tolkas alltid ut som register(term 1).
+Term1 tolkas alltid som register(term1).
 
-Tolkning am2 om angivet va (vanlig addresserning):
+Tolkning av am2 om va (vanlig addresserning) angivet:
 am2 = 00 -> direkt angivet värde
-am2= 01 -> register(term)
+am2 = 01 -> register(term)
 
-0000 Nop
-utför ingen operation
+<mode> är <IMED, DIR>
 
-0001 move	
-lagra term2 till register(utaddr)
+0000 NOP
+Utför ingen operation.
+NOP
 
-0010 mapStore
-store term2 (va)(1 downto 0) i mapm address reg(term 1)
+0001 MOVE
+Lagrar term2 till register(utaddr).
+MOVE <utaddr> <term2>
 
-0011 Add
-addera reg(term1) med term2 (va), lagra i reg(utaddr)
+0010 mapStore (MAPS)
+Lagra term2 (va) i mapm address reg(term 1)
+MAPS <term1> <mode> <term2>
 
-0100 Sub
-subtrahera reg(term1) med term2 (va), lagra i reg(utaddr)
-sätt z hög om res = 0,  sätt N hög om res < 0, annars negativa
+0011 ADD
+Addera reg(term1) med term2 (va), lagra i reg(utaddr)
+sätter n hög om summan överskrider 255, annars låg.
+ADD <term1> <mode> <term2> <utaddr>
 
-0101 Mult
-multiplicera reg(term1) med term2 (va), lagra i reg(utaddr)
+0100 SUB
+Subtrahera reg(term1) med term2 (va), lagra i reg(utaddr)
+Sätter z hög om res = 0, sätter N hög om res < 0, annars negativa
+SUB <term1> <mode> <term2> <utaddr>
 
-0110 Shift
-shifta reg(term1) vänster med 4 bitar, lagra i reg(utaddr)
+0101 MULT
+Multiplicerar reg(term1) med term2 (va), lagra i reg(utaddr)
+MULT <term1> <mode> <term2> <utaddr>
 
-0111 Col - collision
+0110 SHIFT
+Shifta reg(term1) vänster med 4 bitar, lagra i reg(utaddr)
+SHIFT <term1> <utaddr>
+
+0111 Collision (COL)
 Tar indata term2 = (4 bitar Y coord.  | 4 bitar X coord)
 	   lagrar mapm(term2) i reg(utaddr)
+COL
 
-1000 Comp
-som Sub, men lagra inget värde i register
+1000 Compare (CMP)
+Fungerar som SUB, men lagrar inget värde i register, använder alltså inte utaddr
+CMP <term1> <mode> <term2>
 
-1001 Set flag - z:n
-am2 = 00 -> z <= 0
-am2 = 01 -> z <= 1
-am2 = 10 -> n <= 0 
-am2 = 11 -> n <= 1
+1001 Set flag (SETF) - z/n
+am2 = 10 -> z <= 0 (Z0)
+am2 = 11 -> z <= 1 (Z1)
+am2 = 00 -> n <= 0 (N0)
+am2 = 01 -> n <= 1 (N1)
+SETF <Z0, Z1, N0, N1>
 
-1010 Branch on Flag - z/n
+1010 Branch on Flag (BRF) - z/n
 om ((am2(0) = 0 && z = 1) || (am2(0) = 1 && n = 1))
 	branch (dvs pc = pc + term1 (direkt addressering)) - 128
+BRF <term1> <Z, N>
 
-1011 branch
+1011 Branch (BRA)
 pc = pc + term1 (direkt addressering) - 128
-	
-1111 Halt 
-stop execution -- currently not implemented.
+BRA <term1>
+
+1111 HALT
+Stop execution -- currently not implemented.
+HALT
