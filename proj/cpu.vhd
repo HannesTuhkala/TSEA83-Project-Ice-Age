@@ -67,7 +67,7 @@ architecture behavioral of cpu is
 	---------------PROGRAM COUNTER--------------------
 	--------------------------------------------------
 	signal stall : bit := '0';
-	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
+	--signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
 	signal PC : std_logic_vector(8 downto 0) := (others => '0');
 	signal PC1 : std_logic_vector(8 downto 0) := (others => '0');
 	--------------------------------------------------
@@ -208,8 +208,9 @@ begin
 			PC1 <= PC; -- delay
 
 			if (stall = '0') then
-				if (branch = '1') then
-					PC <= PC1 + IR1(25 downto 17);
+				--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
+				if branch = '1' then
+					PC <= PC1 + IR2(25 downto 17);
 				else
 					PC <= PC + 1;
 				end if;
@@ -261,17 +262,19 @@ begin
 			end if;
 			
 			if (IR2_op = "0110") then   -- Shift
-				if (IR2_am2(1) = '1') then 	-- Right Shift
-					res(6 downto 0) <= A2(7 downto 1);
-					if (IR2_am2(0) = '1')then -- arithmethric shift
-						res(7) <= A2(7);
-					else 
-						res(7) <= '0';
-					end if;
-				else 
-					res(7 downto 1) <= A2(6 downto 0);
-					res(0) <= '0';
-				end if;
+				--if (IR2_am2(1) = '1') then 	-- Right Shift
+				--	res(6 downto 0) <= A2(7 downto 1);
+				--	if (IR2_am2(0) = '1')then -- arithmethric shift
+				--		res(7) <= A2(7);
+				--	else 
+				--		res(7) <= '0';
+				--	end if;
+				--else 
+				--	res(7 downto 1) <= A2(6 downto 0);
+				--	res(0) <= '0';
+				--end if;
+				res(7 downto 4) <= A2(3 downto 0);
+				res(3 downto 0) <= (others => '0');
 			end if;
 			
 						
