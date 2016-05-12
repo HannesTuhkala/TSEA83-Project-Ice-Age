@@ -114,6 +114,7 @@ architecture behavioral of cpu is
 
 	alias IR1_term2 : std_logic_vector(7 downto 0) is IR1(15 downto 8);
 
+	alias IR2_fA : std_logic_vector(7 downto 0) is IR2(7 downto 0);
 	alias IR3_fA : std_logic_vector(7 downto 0) is IR3(7 downto 0);
 
 	-------------------------------------------------
@@ -226,7 +227,7 @@ begin
 			end if;
 			
 			if (IR2_op = "0010") then  --map editor
-				mapm(to_integer(unsigned(IR2_fA))) <= tmpB2;
+				mapm(to_integer(unsigned(IR2_fA))) <= B2;
 			elsif (IR2_op = "0111") then   --collision detector
 				res(7 downto 2) <= (others => '0');
 				res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
