@@ -38,6 +38,7 @@ MAPS <term1> <mode> <term2>
 
 0011 ADD
 Addera reg(term1) med term2 (va), lagra i reg(utaddr)
+sätter n hög om summan överskrider 255, annars låg.
 ADD <term1> <mode> <term2> <utaddr>
 
 0100 SUB

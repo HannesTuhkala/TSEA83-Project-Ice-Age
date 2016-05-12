@@ -234,6 +234,11 @@ begin
 
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
+				if (to_integer(unsigned(A2)) + to_integer(unsigned(B2)) > 256)then 
+					n <= '1';
+				else
+					n <= '0';
+				end if;
 			end if;
 			
 			if (IR2_op = "0100" or IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value
