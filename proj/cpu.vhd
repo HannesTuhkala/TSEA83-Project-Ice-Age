@@ -226,7 +226,7 @@ begin
 			end if;
 			
 			if (IR2_op = "0010") then  --map editor
-				mapm(to_integer(unsigned(A2))) <= tmpB2;
+				mapm(to_integer(unsigned(IR2_fA))) <= tmpB2;
 			elsif (IR2_op = "0111") then   --collision detector
 				res(7 downto 2) <= (others => '0');
 				res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
