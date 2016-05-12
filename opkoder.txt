@@ -22,6 +22,8 @@ Tolkning av am2 om va (vanlig addresserning) angivet:
 am2 = 00 -> direkt angivet värde
 am2 = 01 -> register(term)
 
+<mode> är <IMED, DIR>
+
 0000 NOP
 Utför ingen operation.
 NOP
