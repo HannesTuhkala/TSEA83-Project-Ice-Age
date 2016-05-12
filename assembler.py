@@ -20,11 +20,12 @@ MODES = {
 	"IMED" : "00",
 	"DIR" : "01",
 	"LEFT" : "00",
-	"RIGHT" : "01",
-	"Z0" : "00",
-	"Z1" : "01",
-	"N0" : "10",
-	"N1" : "11",
+	"RIGHT" : "10",
+	"ARIT" : "11",
+	"Z0" : "10",
+	"Z1" : "11",
+	"N0" : "00",
+	"N1" : "01",
 	"Z" : "00",
 	"N" : "10",
 }
@@ -49,6 +50,8 @@ def assemble(filename):
 		# Remove the newline and tab character
 		line = line.replace("\n", "")
 		line = line.replace("\t", "")
+		if line.startswith("#"):
+			continue
 		outputcode[currentLine] = parseLine(line, currentLine, labels)
 		currentLine += 1
 	
@@ -80,7 +83,8 @@ def parseLine(line, currentLine, labels):
 		elif opcode == "SHIFT":
 			outputLine += getTerm1(words[1])
 			outputLine += getMode(words[2])
-			outputLine += toBinary(0, 16)
+			outputLine += addLeadingZeros(8)
+			outputLine += toBinary(int(words[3]), 8)
 		elif opcode == "SETF":
 			outputLine += addLeadingZeros(8)
 			outputLine += getMode(words[1])
