@@ -88,7 +88,6 @@ architecture behavioral of cpu is
 	signal specialRegXYD : std_logic_vector(7 downto 0);
 	signal specialRegJoy : std_logic_vector(7 downto 0);
 
-	signal reg_enable : std_logic_vector(1 downto 0) := (others => '0');
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
 	signal B2 : std_logic_vector(7 downto 0) := (others => '0');
 	-------------------------------------------------
