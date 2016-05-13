@@ -3,6 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity iceage is
 	port (
+		Led : out std_logic_vector(7 downto 0);
 		btnu : in std_logic;
 		btnd : in std_logic;
 		btnl : in std_logic;
@@ -55,6 +56,23 @@ architecture behavioral of iceage is
 	signal MISOtmp : std_logic := '0';
 	
 begin
+	Led <= Joylink;
+	PROCESS(clk)
+	begin
+		if (rising_edge(clk)) then
+			if btnl='1' then --UP
+				Joylink(2 downto 0) <= "111";
+			elsif btnr='1' then --DOWN
+				Joylink(2 downto 0) <= "110";
+			elsif btnu='1' then --RIGHT
+				Joylink(2 downto 0) <= "101";
+			elsif btnd='1' then -- LEFT
+				Joylink(2 downto 0) <= "100";
+			else		-- no button
+				Joylink(2 downto 0) <= "000";
+			end if;
+		end if;
+	END PROCESS;	
 	PROCESS(clk)
 	begin
 		if (rising_edge(clk)) then
