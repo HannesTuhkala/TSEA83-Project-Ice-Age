@@ -29,4 +29,4 @@ def convertFileToMap(filename):
 
 
 
-convertFileToMap("test");
+convertFileToMap("map");
