@@ -9,7 +9,6 @@ entity iceage is
 		btnl : in std_logic;
 		btnr : in std_logic;
 		clk : in std_logic;
-		btns: in std_logic;
 		vgaRed: out std_logic_vector(2 downto 0);
 		vgaGreen : out std_logic_vector(2 downto 0);
 		vgaBlue : out std_logic_vector(2 downto 1);
@@ -31,7 +30,6 @@ architecture behavioral of iceage is
 	
 	component VGA_MOTOR is
 		port (
-			rst : in std_logic;
 			clk : in std_logic;
 			playerCoordRough : in std_logic_vector(7 downto 0);
 			playerCoordDetailed : in std_logic_vector(7 downto 0);
@@ -111,7 +109,7 @@ begin
 
 
 	MAP1 : cpu port map(clk=>clk, joystick=>joylink, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
-	MAP2 : VGA_MOTOR port map(rst => btns,clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> tmpCoordR ,playerCoordDetailed=>tmpCoordD, tileType=>tileLink);
+	MAP2 : VGA_MOTOR port map(clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> tmpCoordR ,playerCoordDetailed=>tmpCoordD, tileType=>tileLink);
 
 
 

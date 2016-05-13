@@ -15,7 +15,7 @@ entity VGA_MOTOR is
 	 playerCoordDetailed	: in std_logic_vector(7 downto 0);
 	 tileSlot		: out std_logic_vector(7 downto 0);
 	 tileType		: in std_logic_vector(1 downto 0);
-	 rst			: in std_logic;
+
 	 vgaRed		        : out std_logic_vector(2 downto 0);
 	 vgaGreen	        : out std_logic_vector(2 downto 0);
 	 vgaBlue		: out std_logic_vector(2 downto 1);
@@ -167,11 +167,7 @@ begin
   process(clk)
   begin
     if rising_edge(clk) then
-      if rst='1' then
-	ClkDiv <= (others => '0');
-      else
 	ClkDiv <= ClkDiv + 1;
-      end if;
     end if;
   end process;
 	
@@ -191,9 +187,6 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if rst = '1' then
-				Xpixel <= (others => '0');
-			end if;
 
 			if Clk25 = '1' then
 				if (Xpixel < 800) then
@@ -228,9 +221,6 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if rst = '1' then
-				Ypixel <= (others => '0');
-			end if;
 
 			if Clk25 = '1' then
 				if (Xpixel = 799) then
