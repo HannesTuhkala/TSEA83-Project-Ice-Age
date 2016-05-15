@@ -104,17 +104,16 @@ comp var_tile, 1		--hit rock
 branch on flag (z, L1)
 
 
-pcd = 16
 
-:L4.2:
 PCD = x"10"
 branch unconditionally L6
-:L2.2:
+:L4.2:
 pcd += 16
 branch on flag (n, L4.3)
 branch unconditionally L6
 :L4.3:
 PCR += 16
+branch unconditionally L6
 ------------------------------------------------------
 
 :L5:			--left
@@ -136,11 +135,13 @@ branch on flag (z, L1)
 
 
 PCR = PCR -1
-PCD = PCD + 15
-
+PCD = 0F
+branch unconditionally L6
 :L5.2:
-cycle 
-pcd -= 1
+comp PCD, 0
+branch on flag (z, L5)
+PCD = PCD - 1;
+branch unconditionally L6
 ------------------------------------------------------
 
 :L9: 			--Goal reached
