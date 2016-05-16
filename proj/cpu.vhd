@@ -135,7 +135,7 @@ begin
 		if (rising_edge(clk)) then
 			
 			if to_integer(unsigned(IR1_term1)) < 64 then
-			      A2 <= reg(to_integer(unsigned(IR1_term1)));
+			      A2 <= reg(to_integer(unsigned(IR1_term1(5 downto 0))));
 			else 
 			     case IR1_term1(1 downto 0) is 
 			     	when "00" => A2 <= specialRegXYR;
@@ -148,7 +148,7 @@ begin
 			
 			if ir1_am2 = "01" then
 				if to_integer(unsigned(IR1_term2)) < 64 then
-				      B2 <= reg(to_integer(unsigned(IR1_term2)));
+				      B2 <= reg(to_integer(unsigned(IR1_term2(5 downto 0))));
 				else case IR1_term2(1 downto 0) is 
 					when	"00" => B2 <= specialRegXYR;
 					when	"01" => B2 <= specialRegXYD;
@@ -197,24 +197,24 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			-- If IR1_op code is equal to the OP code for branch or Branch on flag (and correct flag is set).
-			if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
-				branch <= '1';
-			else
-				branch <= '0';
-			end if;
-		
+			--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then
+			--	branch <= '1';
+			--else
+			--	branch <= '0';
+			--end if;
+		--single nop needed after any branch
 			PC1 <= PC; -- delay
 
-			--if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
-			if branch = '1' then
-				PC <= PC1 + IR2(25 downto 17);
+			--if branch = '1' then
+			--	PC <= IR2(25 downto 17);
+			if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
+				PC <= IR1_term1;
 			else
 				PC <= PC + 1;
 			end if;
 		end if;
 	END PROCESS;
 	-------- END Program Counter ------
-
 
 
 	tmpB2 <= B2(1 downto 0);
