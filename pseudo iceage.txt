@@ -1,34 +1,34 @@
-:L1:comp joystick, -still- --z set high if no joystick signal
+comp joystick, -still- --z set high if no joystick signal	--L1
 move joystick, var_dir
-branch on flag (z, L1)	--keep waiting for joystick values
-move val 16 to var_step_count		
-
+nop	--allow vardir to settle for comparison
+branch on flag (z, L1)	--keep waiting for joystick values		
 comp var_dir, -up-
+nop	--allow flag to settle before branch
 branch on flag (z, L2)
 comp var_dir, -right-
+nop	--allow flag to settle before branch
 branch on flag(z, L3)
-comp var_dir, -down- 
+comp var_dir, -down-
+nop 	--allow flag to settle before branch
 brach on flag (z, L4)
 branch unconditionally(L5)
-
-:L6: move -wait time- to var_count	--value less than 255 still enough for reasonable speed. 255 clock cycles per pixel would yield speed little over 2 tiles/s
-:L7: sub var_count, 1
-comp var_count, 0
+move -wait time- to var_count					--L6
+nop	--allow var_count to settle for comparison
+nop	--allow var_count to settle for comparison
+sub var_count, 1						--L7
+nop	--allow flag to settle before branch
 branch on flag (z, L8)
+nop	--dodge unconditional branch
 Branch unconditionally to L7
-:L8:comp var_dir, -up-
+:L8:comp var_dir, -up-						--L8	-NC
 branch on flag (z, L2.2)
 comp var_dir, -right-
 branch on flag(z, L3.2)
 comp var_dir, -down- 
 brach on flag (z, L4.2)
 branch unconditionally(L5.2)
-
 --------------------------------------------------------
-
-:L2:			--up
-
-tileAccess (PCRaddr) to var_tile
+tileAccess (PCRaddr) to var_tile	--L2
 comp var_tile, 3 		--goal
 branch on flag (z, -Line_goal_reached- ) 
 comp var_tile, 2 		--reached ground
@@ -42,20 +42,15 @@ tile access(temp) to var_tile
 comp var_tile, 1		--hit rock
 branch on flag (z, L1)
 
-
 PCR = PCR - 16
 PCD = x"E0"
 branch unconditionally L6
-:L2.2:
+:L2.2:					--L2.2
 pcd -= 16
 branch on flag (z, L2)
 branch unconditionally L6
-
 -------------------------------------------------------------
-
-:L3:			--right
-
-tileAccess (PCRaddr) to var_tile
+tileAccess (PCRaddr) to var_tile		--L3
 comp var_tile, 3 		--goal
 branch on flag (z, L9) 
 comp var_tile, 2 		--reached ground
@@ -70,25 +65,20 @@ tile access(var_temp) to var_tile
 comp var_tile, 1		--hit rock
 branch on flag (z, L1)
 
-
 PCD = 1
 branch unconditionally L6
-:L3.2:
+:L3.2:						--L3.2
 comp pcd, 16 
 branch on flag z, L2
 comp pcd, 15
 branch on flag z, L3.3
 pcd += 1
 branch unconditionally L6
-:L3.3:
-move 0 to pcd
+move 0 to pcd					--L3.3
 PCR += 1
 branch unconditionally L6
 --------------------------------------------------------------
-
-:L4:			--down
-
-tileAccess (PCRaddr) to var_tile
+tileAccess (PCRaddr) to var_tile		--L4
 comp var_tile, 3 		--goal
 branch on flag (z, -Line_goal_reached- ) 
 comp var_tile, 2 		--reached ground
@@ -103,22 +93,16 @@ tile access(temp) to var_tile
 comp var_tile, 1		--hit rock
 branch on flag (z, L1)
 
-
-
-PCD = x"10"
+PCD = x"10"					
 branch unconditionally L6
-:L4.2:
-pcd += 16
+:L4.2:	
+pcd += 16					--L4.2
 branch on flag (n, L4.3)
 branch unconditionally L6
-:L4.3:
-PCR += 16
+PCR += 16					--L4.3
 branch unconditionally L6
 ------------------------------------------------------
-
-:L5:			--left
-
-tileAccess (PCRaddr) to var_tile
+tileAccess (PCRaddr) to var_tile		--L5
 comp var_tile, 3 		--goal
 branch on flag (z, L9)
 comp var_tile, 2 		--reached ground
@@ -133,18 +117,13 @@ tile access(temp) to var_tile
 comp var_tile, 1		--hit rock
 branch on flag (z, L1)
 
-
 PCR = PCR -1
 PCD = 0F
 branch unconditionally L6
-:L5.2:
-comp PCD, 0
+comp PCD, 0					--L5.2
 branch on flag (z, L5)
 PCD = PCD - 1;
 branch unconditionally L6
 ------------------------------------------------------
-
-:L9: 			--Goal reached
-
-move -player start position- to PCR
+move -player start position- to PCR		--L9
 branch unconditionally to L1		--restart game

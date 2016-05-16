@@ -32,7 +32,7 @@ architecture behavioral of cpu is
 	---------------------ALU--------------------------
 	--------------------------------------------------
 		        ----Map layout Memory----
-        	--mapm is arranged as: highest 4 bits denote column, 
+        	--mapm is arranged as: highest 4 bits denote column,
         	--lowest 4 denote row. "10" denotes ground, "01" 
 		--denotes rock, "00" denotes ice. Don't use "11" or you'll draw sprites
     type mapm_t is array(0 to 255) of 
@@ -207,8 +207,8 @@ begin
 
 			--if branch = '1' then
 			--	PC <= IR2(25 downto 17);
-			if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then				if branch = '1' then
-				PC <= IR1_term1;
+			if (IR1_op = "1011" or (IR1_op = "1010" and ((IR1_am2(0) = '0' and z = '1') or (IR1_am2(0) = '1' and n = '1')))) then	
+				PC <= '0' & IR1_term1;
 			else
 				PC <= PC + 1;
 			end if;
