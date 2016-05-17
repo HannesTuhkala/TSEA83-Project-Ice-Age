@@ -72,11 +72,11 @@ SETF <Z0, Z1, N0, N1>
 
 1010 Branch on Flag (BRF) - z/n
 om ((am2(0) = 0 && z = 1) || (am2(0) = 1 && n = 1))
-	branch (dvs pc = pc + term1 (direkt addressering)) - 128
+	branch (dvs pc = term1 (direkt addressering)) - 128
 BRF <term1> <Z, N>
 
 1011 Branch (BRA)
-pc = pc + term1 (direkt addressering) - 128
+pc = term1 (direkt addressering) - 128
 BRA <term1>
 
 1111 HALT
