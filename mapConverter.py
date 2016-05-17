@@ -8,14 +8,16 @@ def convertFileToMap(filename):
 	map=[]
 	newMap=[]
 	for line in open(filename+".txt"):
-		    map.append(line.rstrip('\n')) # .rstrip('\n') removes the line break
+		    map.append(line.rstrip('\n').lower()) # .rstrip('\n') removes the line break
 	for item in map:
 		tmpString=""
 		for char in item:
 			if char == 'r':
-				tmpString=tmpString+"\"10\", "
-			elif char == '#':
 				tmpString=tmpString+"\"01\", "
+			elif char == '#':
+				tmpString=tmpString+"\"10\", "
+			elif char == 'g':
+				tmpString=tmpString+"\"11\", "
 			else:
 				tmpString=tmpString+"\"00\", "
 		newMap.append(tmpString)
