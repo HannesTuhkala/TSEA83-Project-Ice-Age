@@ -20,110 +20,160 @@ nop	--allow flag to settle before branch
 branch on flag (z, L8)
 nop	--dodge unconditional branch
 Branch unconditionally to L7
-:L8:comp var_dir, -up-						--L8	-NC
+comp var_dir, -up-						--L8	-NC
+nop 	--allow flag to settle before branch
 branch on flag (z, L2.2)
 comp var_dir, -right-
+nop	--allow flag to settle before branch
 branch on flag(z, L3.2)
 comp var_dir, -down- 
+nop	--allow flag to settle before branch
 brach on flag (z, L4.2)
+nop	--dodge unconditional branch 
 branch unconditionally(L5.2)
---------------------------------------------------------
-tileAccess (PCRaddr) to var_tile	--L2
+tileAccess (PCRaddr) to var_tile	--L2			--up
+nop	--allow var_tile to settle for comparison
+nop	--allow var_tile to settle for comparison
 comp var_tile, 3 		--goal
-branch on flag (z, -Line_goal_reached- ) 
+nop	--allow flag to settle before branch
+branch on flag (z, -Line_goal_reached- )
 comp var_tile, 2 		--reached ground
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
-comp PCR, 16
+comp PCR, x"10"
+nop	--allow flag to settle before branch
 branch on flag (n, L1)		--hit ceiling 
-
+nop	--dodge sub
 sub PCR, 16 store int var_temp 
+nop	--allow var_temp to settle before tile_access
+nop	--allow var_temp to settle before tile access
 tile access(temp) to var_tile
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 1		--hit rock
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
+nop	--dodge sub
 PCR = PCR - 16
 PCD = x"E0"
 branch unconditionally L6
-:L2.2:					--L2.2
-pcd -= 16
+nop	--dodge sub
+pcd -= 16				--L2.2
+nop	--allow flag to settle before branch
 branch on flag (z, L2)
+nop	--dodge unconditional branch
 branch unconditionally L6
--------------------------------------------------------------
 tileAccess (PCRaddr) to var_tile		--L3
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 3 		--goal
+nop	--allow flag to settle before branch
 branch on flag (z, L9) 
 comp var_tile, 2 		--reached ground
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
 shift pcr left by 4, move to var_temp 
+nop	--allow var_temp to settle before comp
+nop	--allow var_temp to settle before comp
 comp var_temp, x"F0"
+nop	--allow flag to settle before branch
 branch on flag (z, L1)		--hit right wall
-
+nop	--dodge add
 add PCR, 1 store int var_temp 
+nop	--allow var_temp to settle before tile_access
+nop	--allow var_temp to settle before tile_access
 tile access(var_temp) to var_tile
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 1		--hit rock
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
+nop	--dodge assignment
 PCD = 1
 branch unconditionally L6
-:L3.2:						--L3.2
-comp pcd, 16 
+comp pcd, 16 					--L3.2
+nop	--allow flag to settle before branch
 branch on flag z, L2
 comp pcd, 15
+nop	--allow flag to settle before branch
 branch on flag z, L3.3
+nop	--dodge add
 pcd += 1
 branch unconditionally L6
+nop	--dodge assignment
 move 0 to pcd					--L3.3
 PCR += 1
 branch unconditionally L6
---------------------------------------------------------------
 tileAccess (PCRaddr) to var_tile		--L4
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 3 		--goal
+nop	--allow flag to settle before branch
 branch on flag (z, -Line_goal_reached- ) 
 comp var_tile, 2 		--reached ground
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
 move x"ef" to var_temp
+nop	--allow var_temp to settle before comp
+nop	--allow var_temp to settle before comp
 comp var_temp, PCR
+nop	--allow flag to settle before branch
 branch on flag (n, L1)		--hit floor
-
 add PCR, 16 store int var_temp 
+nop	--allow var_temp to settle before tile_access
+nop	--allow var_temp to settle before tile_access
 tile access(temp) to var_tile
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 1		--hit rock
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
+nop	--dodge assignment
 PCD = x"10"					
 branch unconditionally L6
-:L4.2:	
+nop	--dodge add
 pcd += 16					--L4.2
+nop	--allow flag to settle before branch 
 branch on flag (n, L4.3)
+nop	--dodge uncondoitional branch
 branch unconditionally L6
+nop	--dodge add
 PCR += 16					--L4.3
-branch unconditionally L6
-------------------------------------------------------
+branch unconditionally L4
 tileAccess (PCRaddr) to var_tile		--L5
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 3 		--goal
+nop	--allow flag to settle before branch
 branch on flag (z, L9)
 comp var_tile, 2 		--reached ground
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
 Shift PCR left by 4, store in var_temp
+nop	--allow var_temp to settle before comp
+nop	--allow var_temp to settle before comp
 comp var_temp, 0
+nop	--allow flag to settle before branch
 branch on flag (z, L1) 		--hit left wall
-
 sub PCR, 1 store int var_temp 
+nop	--allow var_temp to settle before tile_access
+nop	--allow var_temp to settle before tile_access
 tile access(temp) to var_tile
+nop	--allow var_tile to settle before comp
+nop	--allow var_tile to settle before comp
 comp var_tile, 1		--hit rock
+nop	--allow flag to settle before branch
 branch on flag (z, L1)
-
+nop	--dodge sub
 PCR = PCR -1
 PCD = 0F
 branch unconditionally L6
 comp PCD, 0					--L5.2
+nop	--allow flag to settle before branch
 branch on flag (z, L5)
+nop	--dodge sub
 PCD = PCD - 1;
 branch unconditionally L6
-------------------------------------------------------
+nop	--dodge assignment
 move -player start position- to PCR		--L9
 branch unconditionally to L1		--restart game
