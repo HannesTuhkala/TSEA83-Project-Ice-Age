@@ -93,7 +93,7 @@ PCD = 1
 branch unconditionally L6
 comp pcd, 16 					--L3.2
 nop	--allow flag to settle before branch
-branch on flag z, L2
+branch on flag z, L3
 comp pcd, 15
 nop	--allow flag to settle before branch
 branch on flag z, L3.3
