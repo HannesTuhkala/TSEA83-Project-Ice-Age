@@ -177,3 +177,9 @@ branch unconditionally L6
 nop	--dodge assignment
 move -player start position- to PCR		--L9
 branch unconditionally to L1		--restart game
+
+
+--var_dir =	0000 0000
+--var_count =	0000 0001
+--var_temp = 	0000 0010
+--var_tile =	0000 0011
