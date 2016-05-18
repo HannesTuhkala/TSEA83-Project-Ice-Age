@@ -37,31 +37,63 @@ COL = {
 	"RIGHT" : "11",
 }
 
-lines = {}
+lines = []
 outputcode = {}
 labels = {}
+constants = {}
 currentLine = 0
 
 def assemble(filename):
-	global currentLine, lines, outputcode, labels
+	global currentLine, lines, outputcode, labels, constants
 
 	# Read all lines in file
 	with open(filename) as f:
 		lines = f.readlines()
-	
-	for line in lines:
-		# Remove the newline and tab character
-		line = line.replace("\n", "")
-		line = line.replace("\t", "")
-		
-		# Skip comments
-		if line.startswith("#"):
-			continue
 
+	lines = preAssemble(lines, labels)
+
+	for line in lines:
 		# Parse current line
 		outputcode[currentLine] = parseLine(line, currentLine, labels)
 		currentLine += 1
-	
+
+	printCode(outputcode)
+
+def preAssemble(lines, labels):
+	currentLine = 0
+	newlines = []
+	for key, line in enumerate(lines):
+		# Remove the newline and tab character
+		line = line.replace("\n", "")
+		line = line.replace("\t", "")
+
+		line = line.upper()
+		words = line.split(" ")
+
+
+		for key, word in enumerate(words):
+			if word == "--":
+				continue
+			if isLabel(word):
+				labels[words[0][0:-1]] = currentLine
+				currentLine -= 1
+			if isConstant(word):
+				constants[words[1]] = words[2]
+				currentLine -= 1
+				break;
+			elif word in constants:
+				words[key] = constants[word]
+			elif isHex(word):
+				words[key] = int(word[1:], 16)
+		
+		if (not isConstant(words[0])):
+			newlines.append(" ".join(map(str, words)))
+
+		currentLine += 1
+
+	return newlines
+
+def printCode(outputcode):
 	# Output the machine code: line: machine code: hex code
 	currentLine = 0
 	for line in outputcode:
@@ -78,11 +110,6 @@ def parseLine(line, currentLine, labels):
 	# Make line uppercase and split into words by delimiter 'space'.	
 	line = line.upper()
 	words = line.split(" ")
-	
-	# For every word in the current line, convert hex value to decimal value
-	for key, word in enumerate(words):
-		if isHex(word):
-			words[key] = int(word[1:], 16)
 	
 	# If current line is a label, add it to the dictionary
 	if isLabel(words[0]):
@@ -141,6 +168,10 @@ def isHex(word):
 # If the current word is a label, returns a boolean
 def isLabel(word):
 	return word.endswith(':')
+
+# If the current word is a CONST, returns a boolean
+def isConstant(word):
+	return word == "CONST"
 
 # Converts a decimal number to a binary number and adds remaining leading zeros to the n bit.
 def toBinary(number, n):
