@@ -75,7 +75,7 @@ branch on flag (z, L1)
 shift pcr left by 4, move to var_temp 
 nop	--allow var_temp to settle before comp
 nop	--allow var_temp to settle before comp
-comp var_temp, x"F0"
+comp var_temp, x"10"
 nop	--allow flag to settle before branch
 branch on flag (z, L1)		--hit right wall
 nop	--dodge add

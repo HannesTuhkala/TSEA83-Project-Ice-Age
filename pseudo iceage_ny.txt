@@ -4,15 +4,16 @@ CONST up 7  -- 111
 CONST right 5 -- 101
 CONST down 6 -- 110
 CONST left 4 -- 100
-CONST wait_time 1000 -- not sure yet, TODO!
-CONST line_goal_reached 0 -- not sure yet, TODO!
-CONST player_start_position 0 -- not sure yet, TODO!
-
+CONST wait_time1 $f0
+CONST wait_time2 $f0
+CONST wait_time3 $f0
+CONST player_start_position $e8
 CONST var_dir 0 -- 0000 0000
-CONST var_count 1 -- 0000 0001
-CONST var_temp 2 -- 0000 0010
-CONST var_tile 3 -- 0000 0011
-
+CONST var_temp 1 -- 0000 0010
+CONST var_tile 2 -- 0000 0011
+CONST var_count1 3
+CONST var_count2 4
+const var_count3 5
 L1:
 	CMP joystick, still 								--z set high if no joystick signal	--L1
 	MOVE joystick, var_dir
@@ -28,18 +29,30 @@ L1:
 	NOP 												--allow flag to settle before branch
 	BRF L4 Z
 	BRA L5
+
 L6:
-	MOVE wait_time var_count							--L6
-	NOP													--allow var_count to settle for comparison
-	NOP													--allow var_count to settle for comparison
-L7:
-	SUB var_count IMED 1 var_count						--L7
-	NOP													--allow flag to settle before branch
-	BRF L8 Z
-	NOP													--dodge unconditional branch
-	BRA L7
-L8:
-	CMP var_dir DIR up									--L8	-NC
+	MOVE wait_time1 var_count1
+L6.3:	
+	MOVE wait_time2 var_count2
+L6.2:
+	MOVE wait_time3 var_count
+	NOP
+	NOP
+L6.1:
+	SUB var_count3 imed 1 var_count3
+	NOP
+	BRF L6.1 Z
+	NOP
+	SUB var_count2 imed 1 var_count2
+	NOP
+	BRF L6.2 Z
+	NOP
+	SUB var_count1 imed 1 var_count1
+	NOP
+	BRF L6.3 Z
+	NOP
+
+	CMP var_dir DIR up								
 	NOP 												--allow flag to settle before branch
 	BRF L2.2 Z
 	CMP var_dir right
