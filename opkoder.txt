@@ -14,11 +14,11 @@
 
 
 31           28 27          26 25           18 17         16  15            8 7              0
-[4 bitar opkod] [2 bitar am1 ] [8 bitar term1] [2 bitar am2]  [8 bitar term2] [8 bitar utaddr]
+[4 bitar opkod] [2 bitar am1] [8 bitar term1] [2 bitar am2]  [8 bitar term2] [8 bitar utaddr]
 
 Term1 tolkas alltid som register(term1).
 
-Tolkning av am2 om va (vanlig addresserning) angivet:
+Tolkning av am2 om va (vanlig addressering) angivet:
 am2 = 00 -> direkt angivet värde
 am2 = 01 -> register(term)
 
@@ -30,11 +30,11 @@ NOP
 
 0001 MOVE
 Lagrar term2 till register(utaddr).
-MOVE <utaddr> <term2>
+MOVE <term2> <utaddr>
 
 0010 mapStore (MAPS)
 Lagra term2 (va) i mapm address reg(utaddr)
-MAPS <utaddr> <mode> <term2>
+MAPS <mode> <term2> <utaddr>
 
 0011 ADD
 Addera reg(term1) med term2 (va), lagra i reg(utaddr)
@@ -57,7 +57,7 @@ SHIFT <term1> <utaddr>
 0111 Collision (COL)
 Tar indata term2 = (4 bitar Y coord.  | 4 bitar X coord)
 	   lagrar mapm(term2) i reg(utaddr)
-COL
+COL <term2> <utaddr>
 
 1000 Compare (CMP)
 Fungerar som SUB, men lagrar inget värde i register, använder alltså inte utaddr
