@@ -1,0 +1,47 @@
+const var_count1 0
+const var_count2 1
+const var_count3 2
+const pcr 64
+const joy 66
+CONST DIR 4
+L1:
+	cmp joy IMED 0
+	add joy IMED DIR
+	NOP
+	BRF L1 Z
+	CMP DIR IMED 7
+	NOP
+	BRF UP Z
+	CMP DIR IMED 6
+	NOP
+	BRF DOWN Z
+	CMP DIR IMED 5
+	NOP
+	BRF RIGHT Z
+	NOP
+	BRA LEFT
+	NOP
+UP: 	 
+	SUB PCR IMED 16 PCR
+	BRA POST
+	NOP
+DOWN:
+	ADD PCR IMED 16 PCR
+	BRA POST
+	NOP
+LEFT:	
+	SUB PCR IMED 1 PCR
+	BRA POST 
+	NOP
+RIGHT:
+	ADD PCR IMED 1 PCR
+	BRA POST
+	NOP
+POST:
+	CMP JOY IMED 0
+	NOP
+	BRF L1 Z
+	NOP
+	BRA POST
+	NOP
+
