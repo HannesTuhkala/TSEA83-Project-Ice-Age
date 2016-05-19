@@ -20,7 +20,7 @@ L1:
 	CMP joystick IMED still  					--z set high if no joystick signal
 	MOVE joystick var_dir 
 	NOP  							--allow vardir to settle for comparison
-	BRF L1 Z 						--keep waiting for joystick values		
+	BRF L1 Z 						--keep waiting for joystick values
 	CMP var_dir IMED up 
 	NOP  							--allow flag to settle before branch
 	BRF L2.1 Z 
@@ -43,18 +43,18 @@ L6.2:
 L6.1:
 	SUB var_count3 imed 1 var_count3
 	NOP 
-	BRF L6.1 Z
+	BRF L6.1 N
 	NOP 
 	SUB var_count2 imed 1 var_count2
 	NOP 
-	BRF L6.2 Z
+	BRF L6.2 N
 	NOP 
 	SUB var_count1 imed 1 var_count1
 	NOP 
-	BRF L6.3 Z 
+	BRF L6.3 N 
 	NOP 	     							--direction selection
 	CMP var_dir IMED up	  							
-	NOP  	  											--allow flag to settle before branch
+	NOP  	  						--allow flag to settle before branch
 	BRF L2.2 Z
 	CMP var_dir IMED right   
 	NOP 	    						--allow flag to settle before branch
@@ -83,7 +83,7 @@ L2.1:
 	BRF L1 N		  					--hit ceiling 
 	NOP  							--dodge sub
 	SUB PCR IMED 16 var_temp  
-	NOP 							--allow var_temp to settle before tile_access
+	NOP 						--allow var_temp to settle before tile_access
 	NOP 			  			--allow var_temp to settle before tile access
 	COL var_temp var_tile  
 	NOP 		  					--allow var_tile to settle before comp
