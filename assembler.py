@@ -70,7 +70,6 @@ def preAssemble(lines, labels):
 		line = line.upper()
 		words = line.split(" ")
 
-
 		for key, word in enumerate(words):
 			if word == "--":
 				continue

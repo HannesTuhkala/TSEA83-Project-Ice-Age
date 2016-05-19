@@ -1,15 +1,15 @@
-CONST PCR $40
-CONST PCD $41
-CONST joystick $42
+CONST PCR 64
+CONST PCD 65
+CONST joystick 66
 CONST still 0 -- 000
 CONST up 7  -- 111
 CONST right 5 -- 101
 CONST down 6 -- 110
 CONST left 4 -- 100
-CONST wait_time1 $f0
-CONST wait_time2 $f0
-CONST wait_time3 $f0
-CONST player_start_position $e8
+CONST wait_time1 240
+CONST wait_time2 240
+CONST wait_time3 240
+CONST player_start_position 232
 CONST var_dir 0 -- 0000 0000
 CONST var_temp 1 -- 0000 0010
 CONST var_tile 2 -- 0000 0011
@@ -17,225 +17,224 @@ CONST var_count1 3
 CONST var_count2 4
 const var_count3 5
 L1:
-	CMP joystick still 					--z set high if no joystick signal
-	MOVE joystick var_dir
-	NOP							--allow vardir to settle for comparison
-	BRF L1 Z						--keep waiting for joystick values		
-	CMP var_dir up
-	NOP							--allow flag to settle before branch
-	BRF L2.1 Z
-	CMP var_dir right
-	NOP							--allow flag to settle before branch
-	BRF L3.1 Z
-	CMP var_dir down
-	NOP 							--allow flag to settle before branch
-	BRF L4.1 Z
-	NOP
-	BRA L5.1
-
+	CMP joystick IMED still  					--z set high if no joystick signal
+	MOVE joystick var_dir 
+	NOP  							--allow vardir to settle for comparison
+	BRF L1 Z 						--keep waiting for joystick values		
+	CMP var_dir IMED up 
+	NOP  							--allow flag to settle before branch
+	BRF L2.1 Z 
+	CMP var_dir IMED right 
+	NOP  							--allow flag to settle before branch
+	BRF L3.1 Z 
+	CMP var_dir IMED down 
+	NOP   							--allow flag to settle before branch
+	BRF L4.1 Z 
+	NOP  
+	BRA L5.1 
 L6:
 	MOVE wait_time1 var_count1
 L6.3:	
 	MOVE wait_time2 var_count2
 L6.2:
-	MOVE wait_time3 var_count
-	NOP
-	NOP
+	MOVE wait_time3 var_count3
+	NOP 
+	NOP 
 L6.1:
 	SUB var_count3 imed 1 var_count3
-	NOP
+	NOP 
 	BRF L6.1 Z
-	NOP
+	NOP 
 	SUB var_count2 imed 1 var_count2
-	NOP
+	NOP 
 	BRF L6.2 Z
-	NOP
+	NOP 
 	SUB var_count1 imed 1 var_count1
-	NOP
-	BRF L6.3 Z
-	NOP								--direction selection
-	CMP var_dir DIR up								
-	NOP 												--allow flag to settle before branch
+	NOP 
+	BRF L6.3 Z 
+	NOP 	     							--direction selection
+	CMP var_dir IMED up	  							
+	NOP  	  											--allow flag to settle before branch
 	BRF L2.2 Z
-	CMP var_dir right
-	NOP							--allow flag to settle before branch
-	BRF L3.2 Z
-	CMP var_dir down 
-	NOP							--allow flag to settle before branch
-	BRF L4.2 Z
-	NOP								--dodge unconditional branch 
+	CMP var_dir IMED right   
+	NOP 	    						--allow flag to settle before branch
+	BRF L3.2 Z 
+	CMP var_dir IMED down 
+	NOP 	   						--allow flag to settle before branch
+	BRF L4.2 Z  
+	NOP 	     							--dodge unconditional branch 
 	BRA L5.2
 L2:
-	COL (PCRaddr) to var_tile					--up
-	NOP							--allow var_tile to settle for comp
-	NOP							--allow var_tile to settle for comp
-	CMP var_tile IMED 2						--ground
-	NOP							--allow flag to settle before branch
-	BRF L1 Z
+	COL PCR var_tile 					--up
+	NOP 	  						--allow var_tile to settle for comp
+	NOP 	  						--allow var_tile to settle for comp
+	CMP var_tile IMED 2 						--ground
+	NOP 	  						--allow flag to settle before branch
+	BRF L1 Z  
 L2.1:
-	COL (PCRaddr) to var_tile
-	NOP
-	NOP
-	CMP var_tile IMED 3						--reached goal
-	NOP							--allow flag to settle before branch
+	COL PCR var_tile
+	NOP 
+	NOP 
+	CMP var_tile IMED 3	 					--reached goal
+	NOP 			  				--allow flag to settle before branch
 	BRF L9 Z
-	CMP PCR $10
-	NOP							--allow flag to settle before branch
-	BRF L1 N							--hit ceiling 
-	NOP							--dodge sub
-	SUB PCR IMED 16 var_temp
-	NOP							--allow var_temp to settle before tile_access
-	NOP						--allow var_temp to settle before tile access
-	COL var_temp var_tile
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 1						--hit rock
-	NOP							--allow flag to settle before branch
+	CMP PCR IMED $10
+	NOP 			 				--allow flag to settle before branch
+	BRF L1 N		  					--hit ceiling 
+	NOP  							--dodge sub
+	SUB PCR IMED 16 var_temp  
+	NOP 							--allow var_temp to settle before tile_access
+	NOP 			  			--allow var_temp to settle before tile access
+	COL var_temp var_tile  
+	NOP 		  					--allow var_tile to settle before comp
+	NOP 		  					--allow var_tile to settle before comp
+	CMP var_tile IMED 1	  					--hit rock
+	NOP 			  				--allow flag to settle before branch
 	BRF L1 Z
-	NOP								--dodge sub
+	NOP 								--dodge sub
 	SUB PCR IMED 16 PCR
 	MOVE $E0 PCD
 	BRA L6
-	NOP								--dodge sub
+	NOP 								--dodge sub
 L2.2:
-	SUB pcd IMED 16 pcd									--L2.2
-	NOP							--allow flag to settle before branch
+	SUB pcd IMED 16 pcd 									--L2.2
+	NOP  							--allow flag to settle before branch
 	BRF L2 Z
-	NOP							--dodge unconditional branch
+	NOP 							--dodge unconditional branch
 	BRA L6
 L3:
-	COL (PCRaddr) to var_tile							--L3
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 2 						--ground
-	NOP							--allow flag to settle before branch
-	BRF L1 Z
+	COL PCR var_tile 							--L3
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 2  						--ground
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z 
 L3.1:	
-	COL (PCRaddr) to var_tile
-	NOP
-	NOP
-	CMP var_tile IMED 3						--reached goal
-	NOP							--allow flag to settle before branch
+	COL PCR var_tile 
+	NOP 
+	NOP 
+	CMP var_tile IMED 3 						--reached goal
+	NOP 							--allow flag to settle before branch
 	BRF L9 Z
 	SHIFT PCR var_temp
-	NOP							--allow var_temp to settle before comp
-	NOP							--allow var_temp to settle before comp
+	NOP 							--allow var_temp to settle before comp
+	NOP 							--allow var_temp to settle before comp
 	CMP var_temp IMED $F0
-	NOP							--allow flag to settle before branch
-	BRF L1 Z							--hit right wall
-	NOP							--dodge add
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z 							--hit right wall
+	NOP 							--dodge add
 	ADD PCR IMED 1 var_temp
-	NOP						--allow var_temp to settle before tile_access
-	NOP						--allow var_temp to settle before tile_access
+	NOP 						--allow var_temp to settle before tile_access
+	NOP 						--allow var_temp to settle before tile_access
 	COL var_temp var_tile
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 1						--hit rock
-	NOP							--allow flag to settle before branch
-	BRF L1 Z
-	NOP							--dodge assignment
-	MOVE 1 PCD
-	BRA L6
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 1 						--hit rock
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z 
+	NOP 							--dodge assignment
+	MOVE 1 PCD 
+	BRA L6 
 L3.2:
-	CMP pcd IMED 16 									--L3.2
-	NOP													--allow flag to settle before branch
+	CMP pcd IMED 16  									--L3.2
+	NOP 													--allow flag to settle before branch
 	BRF L3 Z
 	CMP pcd IMED 15
-	NOP													--allow flag to settle before branch
+	NOP 													--allow flag to settle before branch
 	BRF L3.3 Z
-	NOP													--dodge add
+	NOP 													--dodge add
 	ADD pcd IMED 1 pcd
 	BRA L6
-	NOP													--dodge assignment
+	NOP 													--dodge assignment
 L3.3:
 	MOVE 0 pcd	
 	ADD PCR IMED 1 PCR
 	BRA L6
 L4:
-	COL (PCRaddr) to var_tile
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 2						--ground
-	NOP							--allow flag to settle before branch
+	COL PCR var_tile
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 2 						--ground
+	NOP 							--allow flag to settle before branch
 	BRF L1 Z 
 L4.1:
-	COL (PCRaddr) to var_tile
-	NOP
-	NOP
-	CMP var_tile IMED 3						--reached goal
-	NOP
+	COL PCR var_tile
+	NOP 
+	NOP 
+	CMP var_tile IMED 3 						--reached goal
+	NOP 
 	BRF L9 Z
 	MOVE $EF var_temp
-	NOP							--allow var_temp to settle before comp
-	NOP							--allow var_temp to settle before comp
+	NOP 							--allow var_temp to settle before comp
+	NOP 							--allow var_temp to settle before comp
 	CMP var_temp DIR PCR
-	NOP							--allow flag to settle before branch
-	BRF L1 N							--hit floor
+	NOP 							--allow flag to settle before branch
+	BRF L1 N 							--hit floor
 	ADD PCR IMED 16 var_temp
-	NOP						--allow var_temp to settle before tile_access
-	NOP						--allow var_temp to settle before tile_access
-	COL temp var_tile
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 1						--hit rock
-	NOP							--allow flag to settle before branch
-	BRF L1 Z
-	NOP							--dodge assignment
-	MOVE $10 PCD
+	NOP 						--allow var_temp to settle before tile_access
+	NOP 						--allow var_temp to settle before tile_access
+	COL var_temp var_tile
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 1 						--hit rock
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z 
+	NOP 							--dodge assignment
+	MOVE $10 PCD 
 	BRA L6
-	NOP							--dodge add
+	NOP 							--dodge add
 L4.2:
-	ADD pcd IMED 16 pcd									--L4.2
-	NOP							--allow flag to settle before branch 
-	BRF L4.3 N
-	NOP							--dodge unconditional branch
-	BRA L6
-	NOP							--dodge add
+	ADD pcd IMED 16 pcd 									--L4.2
+	NOP 							--allow flag to settle before branch 
+	BRF L4.3 N  
+	NOP 							--dodge unconditional branch
+	BRA L6  
+	NOP 							--dodge add
 L4.3:
-	ADD PCR IMED 16 PCR									--L4.3
+	ADD PCR IMED 16 PCR 									--L4.3
 	BRA L4
 L5:
-	COL (PCRaddr) to var_tile							--L5
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 2						--ground
-	NOP							--allow flag to settle before branch
+	COL PCR var_tile 							--L5
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 2 						--ground
+	NOP 							--allow flag to settle before branch
 	BRF L1 Z							--reached goal
 L5.1:	
-	COL (PCRaddr) to var_tile
+	COL PCR var_tile
+	NOP 
 	NOP
-	NOp
-	CMP var_tile IMED 3						--reached goal
-	NOP							--allow flag to settle before branch
+	CMP var_tile IMED 3 						--reached goal
+	NOP 							--allow flag to settle before branch
 	BRF L1 Z
-	SHIFT PCR var_temp
-	NOP							--allow var_temp to settle before comp
-	NOP							--allow var_temp to settle before comp
-	CMP var_temp IMED 0
-	NOP							--allow flag to settle before branch
-	BRF L1 Z 							--hit left wall
+	SHIFT PCR var_temp 
+	NOP 							--allow var_temp to settle before comp
+	NOP 							--allow var_temp to settle before comp
+	CMP var_temp IMED 0 
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z  							--hit left wall
 	SUB PCR IMED 1 var_temp
-	NOP						--allow var_temp to settle before tile_access
-	NOP						--allow var_temp to settle before tile_access
-	COL temp var_tile
-	NOP							--allow var_tile to settle before comp
-	NOP							--allow var_tile to settle before comp
-	CMP var_tile IMED 1						--hit rock
-	NOP							--allow flag to settle before branch
-	BRF L1 Z
-	NOP							--dodge sub
-	SUB PCR IMED 1 PCR
+	NOP 						--allow var_temp to settle before tile_access
+	NOP 						--allow var_temp to settle before tile_access
+	COL var_temp var_tile
+	NOP 							--allow var_tile to settle before comp
+	NOP 							--allow var_tile to settle before comp
+	CMP var_tile IMED 1 						--hit rock
+	NOP 							--allow flag to settle before branch
+	BRF L1 Z 
+	NOP 							--dodge sub
+	SUB PCR IMED 1 PCR 
 	MOVE $0F PCD
 	BRA L6
 L5.2:
-	CMP PCD IMED 0										--L5.2
-	NOP							--allow flag to settle before branch
-	BRF L5 Z
-	NOP							--dodge sub
-	SUB PCD IMED 1 PCD
-	BRA L6
-	NOP							--dodge assignment
+	CMP PCD IMED 0 										--L5.2
+	NOP 							--allow flag to settle before branch
+	BRF L5 Z 
+	NOP 							--dodge sub
+	SUB PCD IMED 1 PCD 
+	BRA L6 
+	NOP   							--dodge assignment
 L9:
 	MOVE player_start_position PCR
-	BRA L1								--restart game
-	NOP
+	BRA L1 	  							--restart game
+	NOP   

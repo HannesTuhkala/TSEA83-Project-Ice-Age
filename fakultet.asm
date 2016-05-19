@@ -1,4 +1,6 @@
-	MOVE 1 1	
+	MOVE 1 1
+	NOP
+	NOP
 LOOP:	
 	ADD 1 DIR 1 1
 	NOP
