@@ -18,7 +18,7 @@ CONST var_count2 4
 const var_count3 5
 L1:
 	CMP joystick IMED still  					--z set high if no joystick signal
-	MOVE joystick var_dir 
+	ADD joystick IMED 0 var_dir 
 	NOP  							--allow vardir to settle for comparison
 	BRF L1 Z 						--keep waiting for joystick values
 	CMP var_dir IMED up 

@@ -92,7 +92,7 @@ def printCode(outputcode):
 		if (outputcode[line] == ""):
 			continue;
 		#print(str(currentLine) + ": " + outputcode[line] + " : " + "{0:0>4X}".format(int(outputcode[line], 2)))
-		print(outputcode[line])
+		print('\"'+outputcode[line]+"\",")
 		currentLine += 1
 
 # Parse a line into machine code
