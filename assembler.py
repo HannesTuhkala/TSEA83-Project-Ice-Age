@@ -29,14 +29,6 @@ MODES = {
 	"N" : "01",
 }
 
-# Deprecated, used for COL
-COL = {
-	"UP" : "00",
-	"DOWN" : "01",
-	"LEFT" : "10",
-	"RIGHT" : "11",
-}
-
 lines = []
 outputcode = {}
 labels = {}
@@ -72,9 +64,9 @@ def preAssemble(lines, labels):
 
 		for key, word in enumerate(words):
 			if word == "--":
-				continue
+				break;
 			if isLabel(word):
-				labels[words[0][0:-1]] = currentLine
+				labels[word[0:-1]] = currentLine
 				currentLine -= 1
 			if isConstant(word):
 				constants[words[1]] = words[2]
@@ -85,7 +77,7 @@ def preAssemble(lines, labels):
 			elif isHex(word):
 				words[key] = int(word[1:], 16)
 		
-		if (not isConstant(words[0])):
+		if (not isConstant(words[0]) and not isLabel(words[0])):
 			newlines.append(" ".join(map(str, words)))
 
 		currentLine += 1
@@ -99,7 +91,8 @@ def printCode(outputcode):
 		# If current line is empty, skip it (can happen when using labels)
 		if (outputcode[line] == ""):
 			continue;
-		print(str(currentLine) + ": " + outputcode[line] + " : " + "{0:0>4X}".format(int(outputcode[line], 2)))
+		#print(str(currentLine) + ": " + outputcode[line] + " : " + "{0:0>4X}".format(int(outputcode[line], 2)))
+		print(outputcode[line])
 		currentLine += 1
 
 # Parse a line into machine code
@@ -110,54 +103,51 @@ def parseLine(line, currentLine, labels):
 	line = line.upper()
 	words = line.split(" ")
 	
-	# If current line is a label, add it to the dictionary
-	if isLabel(words[0]):
-		labels[words[0][0:-1]] = currentLine
-	else:
-		opcode = words[0]
-		outputLine += getOP(opcode)
+	opcode = words[0]
+	outputLine += getOP(opcode)
 		
-		if opcode == "NOP" or opcode == "HALT":
-			outputLine += toBinary(0, 26)
-		elif opcode == "MOVE":
-			outputLine += addZeros(10)
-			outputLine += toBinary(words[1], 8)
-			outputLine += toBinary(words[2], 8)
-		elif opcode == "MAPS":
-			outputLine += addZeros(8)
-			outputLine += getMode(words[1])
-			outputLine += toBinary(words[2], 8)
-			outputLine += toBinary(words[3], 8)
-		elif opcode == "SHIFT":
-			outputLine += getTerm1(words[1])
-			outputLine += addZeros(10)
-			outputLine += toBinary(words[2], 8)
-		elif opcode == "SETF":
-			outputLine += addZeros(8)
-			outputLine += getMode(words[1])
-			outputLine += addZeros(16)
-		elif opcode == "COL":
-			outputLine += addZeros(10)
-			outputLine += toBinary(words[1], 8)
-			outputLine += toBinary(words[2], 8)
-		elif opcode == "BRF":
-			outputLine += getTerm1(words[1])
-			outputLine += getMode(words[2])
-			outputLine += addZeros(16)
-		elif opcode == "BRA":
-			outputLine += getTerm1(words[1])
-			outputLine += "01"
-			outputLine += addZeros(16)
-		elif opcode == "CMP":
-			outputLine += getTerm1(words[1])
-			outputLine += getMode(words[2])
-			outputLine += toBinary(words[3], 8)
-			outputLine += addZeros(8)
-		else:
-			outputLine += getTerm1(words[1])
-			outputLine += getMode(words[2])
-			outputLine += toBinary(words[3], 8)
-			outputLine += toBinary(words[4], 8)
+	if opcode == "NOP" or opcode == "HALT":
+		outputLine += toBinary(0, 26)
+	elif opcode == "MOVE":
+		outputLine += addZeros(10)
+		outputLine += toBinary(words[1], 8)
+		outputLine += toBinary(words[2], 8)
+	elif opcode == "MAPS":
+		outputLine += addZeros(8)
+		outputLine += getMode(words[1])
+		outputLine += toBinary(words[2], 8)
+		outputLine += toBinary(words[3], 8)
+	elif opcode == "SHIFT":
+		outputLine += getTerm1(words[1])
+		outputLine += addZeros(10)
+		outputLine += toBinary(words[2], 8)
+	elif opcode == "SETF":
+		outputLine += addZeros(8)
+		outputLine += getMode(words[1])
+		outputLine += addZeros(16)
+	elif opcode == "COL":
+		outputLine += addZeros(10)
+		outputLine += toBinary(words[1], 8)
+		outputLine += toBinary(words[2], 8)
+	elif opcode == "BRF":
+		outputLine += getTerm1(words[1])
+		outputLine += getMode(words[2])
+		outputLine += addZeros(16)
+	elif opcode == "BRA":
+		outputLine += getTerm1(words[1])
+		outputLine += "01"
+		outputLine += addZeros(16)
+	elif opcode == "CMP":
+		outputLine += getTerm1(words[1])
+		outputLine += getMode(words[2])
+		outputLine += toBinary(words[3], 8)
+		outputLine += addZeros(8)
+	else:
+		outputLine += getTerm1(words[1])
+		outputLine += getMode(words[2])
+		outputLine += toBinary(words[3], 8)
+		outputLine += toBinary(words[4], 8)
+	
 	return outputLine
 
 # If the current word is a hex, returns a boolean
