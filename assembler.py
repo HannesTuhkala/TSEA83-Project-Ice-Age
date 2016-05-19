@@ -26,7 +26,7 @@ MODES = {
 	"N0" : "00",
 	"N1" : "01",
 	"Z" : "00",
-	"N" : "10",
+	"N" : "01",
 }
 
 # Deprecated, used for COL
@@ -198,8 +198,7 @@ def getTerm1(word):
 		return toBinary(labels[word], 8)
 	else:
 		try:
-			if int(word) >= 0 and int(word) < 64:
-				return toBinary(int(word), 8)
+			return toBinary(int(word), 8)
 		except ValueError:
 			print("'" + word + "' is not a valid label.")
 			sys.exit(-1)
