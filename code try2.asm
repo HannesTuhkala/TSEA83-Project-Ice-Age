@@ -6,7 +6,7 @@ const joy 66
 CONST DIR 4
 L1:
 	cmp joy IMED 0
-	add joy IMED DIR
+	add joy IMED 0 DIR
 	NOP
 	BRF L1 Z
 	CMP DIR IMED 7
@@ -44,4 +44,3 @@ POST:
 	NOP
 	BRA POST
 	NOP
-

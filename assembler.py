@@ -50,6 +50,7 @@ def assemble(filename):
 		currentLine += 1
 
 	printCode(outputcode)
+	print(currentLine)
 
 def preAssemble(lines, labels):
 	currentLine = 0
@@ -98,7 +99,7 @@ def printCode(outputcode):
 # Parse a line into machine code
 def parseLine(line, currentLine, labels):
 	outputLine = ""
-	
+	print (currentLine)	
 	# Make line uppercase and split into words by delimiter 'space'.	
 	line = line.upper()
 	words = line.split(" ")
