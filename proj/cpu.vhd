@@ -15,90 +15,89 @@ end cpu;
 
 architecture behavioral of cpu is
 	
-	----------------------------------------------------
+	-------------------------------------------------
 	-------------------PROGRAM_MEMORY-------------------
 	----------------------------------------------------
 	-- Declaration of a block-RAM
 	-- with 512 addresses of 32 bits width. -2KB
-	type pm_t is array(0 to 31) of
+	type pm_t is array(0 to 72) of
 		std_logic_vector(31 downto 0);
 	-- Reset all bits on all addresses
-	signal pm : pm_t := (
+	signal pm : pm_t :=(
 "10000001000010000000000000000000",
 "00110001000010000000000000000100",
 "00000000000000000000000000000000",
 "10100000000000000000000000000000",
+"00000000000000000000000000000000",
 "10000000000100000000011100000000",
 "00000000000000000000000000000000",
-"10100000010000000000000000000000",
+"10100000010001000000000000000000",
 "10000000000100000000011000000000",
 "00000000000000000000000000000000",
-"10100000011101000000000000000000",
+"10100000011110000000000000000000",
 "10000000000100000000010100000000",
 "00000000000000000000000000000000",
-"10100000110111000000000000000000",
+"10100000110110000000000000000000",
 "00000000000000000000000000000000",
 "10110000101010010000000000000000",
 "00000000000000000000000000000000",
-"01000001000000000001000000000000",
-"00000000000000000000000000000000",
-"00000000000000000000000000000000",
-"01110000000000000000000000000000",
-"00000000000000000000000000000000",
-"00000000000000000000000000000000",
-"10000000000000000000000100000000",
-"00000000000000000000000000000000",
-"10100000000000000000000000000000",
-"00000000000000000000000000000000",
 "01000001000000000001000001000000",
-"10110001000100010000000000000000",
-"00000000000000000000000000000000",
-"00110001000000000001000000000000",
 "00000000000000000000000000000000",
 "00000000000000000000000000000000",
-"01110000000000000000000000000000",
+"10000001000000000000000000000000",
+"10000001000101000000000100000000",
 "00000000000000000000000000000000",
+"10100000011011000000000000000000",
 "00000000000000000000000000000000",
-"10000000000000000000000100000000",
-"00000000000000000000000000000000",
-"10100000000000000000000000000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000",
 "00110001000000000001000001000000",
-"10110001000100010000000000000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000",
-"01000001000000000000000100000000",
-"00000000000000000000000000000000",
-"00000000000000000000000000000000",
-"01110000000000000000000000000000",
+"00110001000000000001000001000000",
 "00000000000000000000000000000000",
 "00000000000000000000000000000000",
-"10000000000000000000000100000000",
+"10000001000101000000000100000000",
 "00000000000000000000000000000000",
-"10100000000000000000000000000000",
+"10100000100111000000000000000000",
+"00000000000000000000000000000000",
+"10110001000011010000000000000000",
+"00000000000000000000000000000000",
+"01000001000000000001000001000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000",
 "01000001000000000000000101000000",
-"10110001000100010000000000000000",
-"00000000000000000000000000000000",
-"00110001000000000000000100000000",
 "00000000000000000000000000000000",
 "00000000000000000000000000000000",
-"01110000000000000000000000000000",
+"10000001000101000000000100000000",
 "00000000000000000000000000000000",
+"10100000110011000000000000000000",
 "00000000000000000000000000000000",
-"10000000000000000000000100000000",
-"00000000000000000000000000000000",
-"10100000000000000000000000000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000",
 "00110001000000000000000101000000",
-"10110001000100010000000000000000",
+"10110001000011010000000000000000",
+"00000000000000000000000000000000",
+"00110001000000000000000101000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"10000001000000000000000000000000",
+"10000001000101000000000100000000",
+"00000000000000000000000000000000",
+"10100001000000000000000000000000",
+"00000000000000000000000000000000",
+"10110001000011010000000000000000",
+"00000000000000000000000000000000",
+"01000001000000000000000101000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000",
 "10000001000010000000000000000000",
 "00000000000000000000000000000000",
 "10100000000000000000000000000000",
 "00000000000000000000000000000000",
-"10110001000100010000000000000000",
+"10110001000011010000000000000000",
 "00000000000000000000000000000000");
->>>>>>> 79c8b73676794a9b792fb717fd912b22259e17c0
+
 	--------------END OF PROGRAM MEMORY---------------
 	--------------------------------------------------
 	
@@ -158,7 +157,10 @@ architecture behavioral of cpu is
 	signal specialRegXYR : std_logic_vector(7 downto 0):= "10001000";	-- Position the pinguin spawns on
 	signal specialRegXYD : std_logic_vector(7 downto 0):=(others => '0');
 	signal specialRegJoy : std_logic_vector(7 downto 0):=(others => '0');
-
+	
+	signal specialRegDir : std_logic_vector(7 downto 0):=(others => '0');
+	signal specialRegNT : std_logic_vector(1 downto 0):= "00";
+	signal specialRegCT : std_logic_vector(1 downto 0):= "00"; 
 
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
 	signal B2 : std_logic_vector(7 downto 0) := (others => '0');
@@ -211,10 +213,14 @@ begin
 			if to_integer(unsigned(IR1_term1)) < 64 then
 			      A2 <= reg(to_integer(unsigned(IR1_term1(5 downto 0))));
 			else 
-			     case IR1_term1(1 downto 0) is 
-			     	when "00" => A2 <= specialRegXYR;
-			     	when "01" => A2 <= specialRegXYD;
-			     	when "10" => A2 <= specialRegJoy;
+			     case IR1_term1(2 downto 0) is 
+			     	when "000" => A2 <= specialRegXYR;
+			     	when "001" => A2 <= specialRegXYD;
+			     	when "010" => A2 <= specialRegJoy;
+
+				when "011" => A2 <= specialRegDir;
+				when "100" => A2 <= "000000" & specialRegNT;
+				when "101" => A2 <= "000000" & specialRegCT;
 			     	when others => A2 <= (others => '0');
 			     end case;
 			end if;
@@ -223,10 +229,14 @@ begin
 			if ir1_am2 = "01" then
 				if to_integer(unsigned(IR1_term2)) < 64 then
 				      B2 <= reg(to_integer(unsigned(IR1_term2(5 downto 0))));
-				else case IR1_term2(1 downto 0) is 
-					when	"00" => B2 <= specialRegXYR;
-					when	"01" => B2 <= specialRegXYD;
-					when	"10" => B2 <= specialRegJoy;
+				else case IR1_term2(2 downto 0) is 
+					when	"000" => B2 <= specialRegXYR;
+					when	"001" => B2 <= specialRegXYD;
+					when	"010" => B2 <= specialRegJoy;
+
+					when 	"011" => B2 <= specialRegDir;
+					when 	"100" => B2 <= "000000" & specialRegNT;
+					when 	"101" => B2 <= "000000" & specialRegCT;
 					when others => B2 <= (others => '0');
 				end case;
 				end if;
@@ -237,7 +247,7 @@ begin
 			playerXYD <= specialRegXYD;
 			specialRegJoy <= joystick;		-- We store the joystick value in register 66.
 
-			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110" or IR3_op = "0111") then
+			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110") then
 				if to_integer(unsigned(IR3_fa)) < 64 then
 			     		 reg(to_integer(unsigned(IR3_fA))) <= res;
 				else
@@ -246,7 +256,7 @@ begin
 					when "01" => specialRegXYD <= res;
 					when others => null;
 				end case;
-				end if;
+				end if; 
 			end if;
 		end if;
 	END PROCESS;
@@ -287,13 +297,26 @@ begin
 				res <= B2;
 			end if;
 			
-			if (IR2_op = "0010") then  --map editor
-				mapm(to_integer(unsigned(IR2_fA))) <= tmpB2;
-			elsif (IR2_op = "0111") then   --collision detector
-				res(7 downto 2) <= (others => '0');
-				res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
-			end if;
+			--if (IR2_op = "0010") then  --map editor
+			--	mapm(to_integer(unsigned(IR2_fA))) <= tmpB2;
+			--if (IR2_op = "0111") then   --collision detector
+			--	res(7 downto 2) <= (others => '0');
+			--	res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
+			--end if;
 
+			--if clk = '1' then
+			--	specialRegNT <= mapm(to_integer(unsigned(specialRegXYR)) + to_integer(unsigned(specialRegDir)));
+			--else
+			--	specialRegCT <= mapm(to_integer(unsigned(specialRegXYR)));
+			--end if;
+			--case specialRegJoy(2 downto 0) is
+			--	when "111" => specialRegDir <= "11110000";
+			--	when "101" => specialRegDir <= "00000001";
+			--	when "110" => specialRegDir <= "00010000";
+			--	when "100" => specialRegDir <= "00001111";
+			--	when others => specialRegDir <= (others => '0');
+			--end case;
+			specialRegCT <= mapm(to_integer(unsigned(specialRegXYR)));
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
 				if (to_integer(unsigned(A2)) + to_integer(unsigned(B2)) > 256)then 
@@ -337,7 +360,7 @@ begin
 			end if;
 			-- branch, branch on flag, nop and halt does not affect alu
 			
-			tile <= mapm(to_integer(unsigned(mapm_address)));	-- outputs requested pixel to pixel selector
+			tile <= mapm(to_integer(unsigned(mapm_address)));	-- outputs requested tile to pixel selector
 		end if;
 	end PROCESS;
 	

@@ -99,7 +99,7 @@ def printCode(outputcode):
 # Parse a line into machine code
 def parseLine(line, currentLine, labels):
 	outputLine = ""
-	print (currentLine)	
+	#print (currentLine)	
 	# Make line uppercase and split into words by delimiter 'space'.	
 	line = line.upper()
 	words = line.split(" ")
@@ -204,3 +204,4 @@ if __name__ == "__main__":
 		sys.exit(-1)
 	
 	assemble(sys.argv[1])
+
