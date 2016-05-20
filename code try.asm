@@ -1,10 +1,12 @@
 CONST var_count1 0 
 CONST var_count2 1
 CONST var_count3 2
+CONST var_count4 3
 CONST pcr 64
 	MOVE $FF var_count1
 	MOVE $FF var_count2
 	MOVE $FF var_count3
+	MOVE $FF var_count4
 	NOP 
 	NOP 
 START:
@@ -38,6 +40,23 @@ LB:
 	NOP
 	NOP
 	MOVE $FF var_count2
+	NOP
+	NOP
+	SUB var_count4 imed 1 var_count4
+	NOP
+	NOP
+	NOP 
+	BRF LC N
+	NOP
+	NOP
+	NOP
+	BRA START
+	NOP
+	NOP
+LC:
+	NOP
+	NOP
+	MOVE $FF var_count4
 	NOP
 	NOP
 	SUB var_count1 imed 1 var_count1
