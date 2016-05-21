@@ -1,4 +1,5 @@
-const pcr 64 
+const pcr 64
+CONST pcd 65
 const joy 66 
 CONST CT 69
 CONST DIR 4 
