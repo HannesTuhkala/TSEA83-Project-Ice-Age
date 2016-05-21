@@ -8,6 +8,7 @@ entity iceage is
 		btnd : in std_logic;
 		btnl : in std_logic;
 		btnr : in std_logic;
+		btns : in std_logic;
 		clk : in std_logic;
 		vgaRed: out std_logic_vector(2 downto 0);
 		vgaGreen : out std_logic_vector(2 downto 0);
@@ -65,6 +66,8 @@ begin
 				Joylink(2 downto 0) <= "101";
 			elsif btnd='1' then -- LEFT
 				Joylink(2 downto 0) <= "100";
+			elsif btns='1' then -- reset pos
+				joylink(2 downto 0) <= "010";
 			else		-- no button
 				Joylink(2 downto 0) <= "000";
 			end if;
