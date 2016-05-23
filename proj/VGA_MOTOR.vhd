@@ -250,8 +250,8 @@ begin
 		tilePixel <= sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
 
 	elsif (to_integer(unsigned(playerCoordRough)) +  1 = to_integer(Ypixel(7 downto 4)) * 16 + to_integer(Xpixel(7 downto 4) )and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >  to_integer(Xpixel(3 downto 0) ) ) and
-		(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) + 17  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0))) ) /= x"ff") then
-		tilePixel <= sprite_mem(17 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+		(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) + 16  - 16 * to_integer(unsigned(playerCoordDetailed(7 downto 4))) - to_integer(unsigned(playerCoordDetailed(3 downto 0))) ) /= x"ff") then
+		tilePixel <= sprite_mem(16 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
 
 	else
 	    tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)) );
