@@ -2,27 +2,28 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
-
 entity cpu is
 	port (
 		clk: in std_logic;
-		playerXYR: out std_logic_vector(7 downto 0);		-- Player coordinate high (each worth 16 pixels)
-		playerXYD: out std_logic_vector(7 downto 0);		-- Player coordinate low (used for transitions between tiles)
+		playerXYR : out std_logic_vector(7 downto 0);-- Player coordinate high (each worth 16 pixels)
+		playerXYD : out std_logic_vector(7 downto 0);-- Player coordinate low (used for transitions between tiles)
 		joystick: in std_logic_vector(7 downto 0);
-		mapm_address: in std_logic_vector(7 downto 0);		--Address by which graphics component can select type of tile in tilemem
-		tile: out std_logic_vector(1 downto 0)				--Tile type at mapm_addres
+		mapm_address : in std_logic_vector(7 downto 0);		--Address by which graphics component can select type of tile in tilemem
+		tile : out std_logic_vector(1 downto 0) 		--Tile type at mapm_addres
 	);
 end cpu;
 
 architecture behavioral of cpu is
-	----------------------------------------------------
+	
+	-------------------------------------------------
 	-------------------PROGRAM_MEMORY-------------------
 	----------------------------------------------------
 	-- Declaration of a block-RAM
 	-- with 512 addresses of 32 bits width. -2KB
-	type pm_t is array(0 to 202) of
+	type pm_t is array(0 to 203) of
 		std_logic_vector(31 downto 0);
-	signal pm : pm_t := (
+	-- Reset all bits on all addresses
+	signal pm : pm_t :=(
 "00010000000000000010000000000101",
 "00010000000000001110101001000000",
 "00010000000000000000000001000001",
@@ -69,7 +70,7 @@ architecture behavioral of cpu is
 "10100010011100000000000000000000",
 "10000001000101000000001100000000",
 "00000000000000000000000000000000",
-"10100011000111000000000000000000",
+"10100011001000000000000000000000",
 "00000000000000000000000000000000",
 "10110000011000010000000000000000",
 "00000000000000000000000000000000",
@@ -105,7 +106,7 @@ architecture behavioral of cpu is
 "10100010011100000000000000000000",
 "10000001000101000000001100000000",
 "00000000000000000000000000000000",
-"10100011000111000000000000000000",
+"10100011001000000000000000000000",
 "00000000000000000000000000000000",
 "10110000110101010000000000000000",
 "00000000000000000000000000000000",
@@ -135,7 +136,7 @@ architecture behavioral of cpu is
 "10100010011100000000000000000000",
 "10000001000101000000001100000000",
 "00000000000000000000000000000000",
-"10100011000111000000000000000000",
+"10100011001000000000000000000000",
 "00000000000000000000000000000000",
 "10110001011001010000000000000000",
 "00000000000000000000000000000000",
@@ -172,7 +173,7 @@ architecture behavioral of cpu is
 "10100010011100000000000000000000",
 "10000001000101000000001100000000",
 "00000000000000000000000000000000",
-"10100011000111000000000000000000",
+"10100011001000000000000000000000",
 "00000000000000000000000000000000",
 "10110001110111010000000000000000",
 "00000000000000000000000000000000",
@@ -220,55 +221,112 @@ architecture behavioral of cpu is
 "00000000000000000000000000000000",
 "10100001100100000000000000000000",
 "00000000000000000000000000000000",
+"01110000000000000000000000000000",
 "10110000000000010000000000000000",
 "00000000000000000000000000000000",
 "00010000000000000000000000000100",
 "00010000000000001111111100000101",
 "10110010100010010000000000000000",
 "00000000000000000000000000000000");
-	--------------------------------------------------
 	--------------END OF PROGRAM MEMORY---------------
 	--------------------------------------------------
 	
 	--------------------------------------------------
 	---------------------ALU--------------------------
 	--------------------------------------------------
-	
-				----Map layout Memory----
-        --mapm is arranged as: highest 4 bits denote column,
-        --lowest 4 denote row. "10" denotes ground, "01" 
+		        ----Map layout Memory----
+        	--mapm is arranged as: highest 4 bits denote column,
+        	--lowest 4 denote row. "10" denotes ground, "01" 
 		--denotes rock, "00" denotes ice. Don't use "11" or you'll draw sprites
-    type mapm_t is array(0 to 255) of 
+	signal cmap: std_logic_vector(1 downto 0) := "00";
+
+    type mapm_t is array(0 to 1023) of 
 			std_logic_vector(1 downto 0); 
-	signal mapm : mapm_t := (
-		"01", "01", "01", "01", "01", "01", "01", "01", "11", "01", "01", "01", "01", "01", "01", "01", 
-		"01", "00", "00", "00", "00", "00", "01", "10", "00", "00", "01", "00", "00", "00", "00", "01", 
-		"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
-		"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
-		"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
-		"01", "00", "01", "00", "00", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "01", 
-		"01", "00", "00", "00", "00", "00", "00", "01", "10", "00", "00", "00", "00", "00", "00", "01", 
-		"01", "00", "00", "00", "00", "00", "00", "01", "01", "00", "00", "00", "00", "00", "00", "01", 
-		"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "10", "01", 
-		"01", "00", "00", "00", "00", "00", "00", "01", "01", "01", "01", "00", "00", "00", "00", "01", 
-		"01", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "00", "00", "00", "01", "01", 
-		"01", "00", "01", "10", "00", "00", "00", "00", "00", "01", "00", "00", "00", "00", "00", "01", 
-		"01", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", 
-		"01", "00", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
-		"01", "00", "00", "00", "00", "00", "01", "00", "01", "10", "10", "00", "00", "00", "00", "01", 
-		"01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01");
+	signal mapm : mapm_t := (--(others => "10");
+"01", "01", "01", "01", "01", "01", "01", "01", "11", "01", "01", "01", "01", "01", "01", "01", 
+"01", "00", "00", "00", "00", "00", "01", "10", "00", "00", "01", "00", "00", "00", "00", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "00", "00", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "10", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "10", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "01", "01", "00", "00", "00", "00", "01", 
+"01", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "00", "00", "00", "01", "01", 
+"01", "00", "01", "10", "00", "00", "00", "00", "00", "01", "00", "00", "00", "00", "00", "01", 
+"01", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "01", "00", "01", "10", "10", "00", "00", "00", "00", "01", 
+"01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01",
+
+"01", "01", "01", "01", "01", "01", "01", "01", "11", "01", "01", "01", "01", "01", "01", "01", 
+"01", "00", "00", "00", "00", "00", "01", "10", "00", "00", "01", "00", "00", "00", "00", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "00", "00", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "10", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "10", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "01", "01", "00", "00", "00", "00", "01", 
+"01", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "00", "00", "00", "01", "01", 
+"01", "00", "01", "10", "00", "00", "00", "00", "00", "01", "00", "00", "00", "00", "00", "01", 
+"01", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "01", "00", "01", "10", "10", "00", "00", "00", "00", "01", 
+"01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01",
+
+"01", "01", "01", "01", "01", "01", "01", "01", "11", "01", "01", "01", "01", "01", "01", "01", 
+"01", "00", "00", "00", "00", "00", "01", "10", "00", "00", "01", "00", "00", "00", "00", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "00", "00", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "10", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "10", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "01", "01", "00", "00", "00", "00", "01", 
+"01", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "00", "00", "00", "01", "01", 
+"01", "00", "01", "10", "00", "00", "00", "00", "00", "01", "00", "00", "00", "00", "00", "01", 
+"01", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "01", "00", "01", "10", "10", "00", "00", "00", "00", "01", 
+"01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01",
+
+"01", "01", "01", "01", "01", "01", "01", "01", "11", "01", "01", "01", "01", "01", "01", "01", 
+"01", "00", "00", "00", "00", "00", "01", "10", "00", "00", "01", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "01", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "01", "00", "00", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "10", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "10", "01", 
+"01", "00", "00", "00", "00", "00", "00", "01", "01", "01", "01", "00", "00", "00", "00", "01", 
+"01", "00", "00", "10", "00", "00", "00", "00", "00", "00", "01", "00", "00", "00", "01", "01", 
+"01", "00", "01", "10", "00", "00", "00", "00", "00", "01", "00", "00", "00", "00", "00", "01", 
+"01", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", 
+"01", "00", "00", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "01", "00", "01", 
+"01", "00", "00", "00", "00", "00", "01", "00", "01", "10", "10", "00", "00", "00", "00", "01", 
+"01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01", "01");
 
 
 	--FLAGS----   
 	signal z : std_logic := '0';
 	signal n : std_logic := '0';
-	
-	signal res : std_logic_vector(7 downto 0) := (others => '0');
 	--------------------------------------------------
 	-------------------END OF ALU---------------------
 	--------------------------------------------------
 	
+	--------------------------------------------------
+	---------------PROGRAM COUNTER--------------------
+	--------------------------------------------------
+	signal branch : bit := '0'; -- set 1 if IR1_op is branch, else set to 0.
 	signal PC : std_logic_vector(8 downto 0) := (others => '0');
+	--------------------------------------------------
+	------------END OF PROGRAM COUNTER----------------
+	--------------------------------------------------
 
 	--------------------------------------------------
 	-------------------REGISTER-----------------------
@@ -277,12 +335,16 @@ architecture behavioral of cpu is
 		std_logic_vector(7 downto 0);	
 
 	signal reg : reg_t := (others => (others => '0'));
+	signal tmpB2 : std_logic_vector(1 downto 0);	--deprecated
 
-	signal specialRegXYR : std_logic_vector(7 downto 0) := (others => '0');			-- Position the penguin spawns on
-	signal specialRegXYD : std_logic_vector(7 downto 0) := (others => '0');
-	signal specialRegJoy : std_logic_vector(7 downto 0) := (others => '0');
+
+	signal specialRegXYR : std_logic_vector(7 downto 0):= "11101010";	-- Position the pinguin spawns on
+	signal specialRegXYD : std_logic_vector(7 downto 0):=(others => '0');
+	signal specialRegJoy : std_logic_vector(7 downto 0):=(others => '0');
 	
-	signal specialRegCT : std_logic_vector(1 downto 0) := (others => '0'); 
+	signal specialRegDir : std_logic_vector(7 downto 0):=(others => '0');
+	signal specialRegNT : std_logic_vector(1 downto 0):= "00";
+	signal specialRegCT : std_logic_vector(1 downto 0):= "00"; 
 
 	signal A2 : std_logic_vector(7 downto 0) := (others => '0');
 	signal B2 : std_logic_vector(7 downto 0) := (others => '0');
@@ -293,9 +355,9 @@ architecture behavioral of cpu is
 	-------------------------------------------------
 	--------------Internal registers-----------------
 	-------------------------------------------------
-	signal IR1 : std_logic_vector(31 downto 0) := (others => '0');
-	signal IR2 : std_logic_vector(31 downto 0) := (others => '0');
-	signal IR3 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir1 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir2 : std_logic_vector(31 downto 0) := (others => '0');
+	signal ir3 : std_logic_vector(31 downto 0) := (others => '0');
 	
 	-------------------ALIAS IR-------------------------
 	alias IR1_op : std_logic_vector(3 downto 0) is IR1(31 downto 28);
@@ -307,13 +369,23 @@ architecture behavioral of cpu is
 
 	alias IR1_am2 : std_logic_vector(1 downto 0) is IR1(17 downto 16);
 	alias IR2_am2 : std_logic_vector(1 downto 0) is IR2(17 downto 16);
+	alias IR3_am2 : std_logic_vector(1 downto 0) is IR3(17 downto 16);
 
 	alias IR1_term2 : std_logic_vector(7 downto 0) is IR1(15 downto 8);
 
+	alias IR2_fA : std_logic_vector(7 downto 0) is IR2(7 downto 0);
 	alias IR3_fA : std_logic_vector(7 downto 0) is IR3(7 downto 0);
 
 	-------------------------------------------------
 	------------END OF INTERNAL REGISTERS------------
+	-------------------------------------------------
+
+	-------------------------------------------------
+	--------------------ALU--------------------------
+	-------------------------------------------------
+	signal res : std_logic_vector(7 downto 0) := (others => '0');
+	-------------------------------------------------
+	-------------------END OF ALU--------------------
 	-------------------------------------------------
 
 begin
@@ -322,48 +394,52 @@ begin
 	BEGIN
 		if (rising_edge(clk)) then
 			
-			if (to_integer(unsigned(IR1_term1)) < 64) then
+			if to_integer(unsigned(IR1_term1)) < 64 then
 			      A2 <= reg(to_integer(unsigned(IR1_term1(5 downto 0))));
 			else 
 			     case IR1_term1(2 downto 0) is 
 			     	when "000" => A2 <= specialRegXYR;
 			     	when "001" => A2 <= specialRegXYD;
 			     	when "010" => A2 <= specialRegJoy;
-					when "101" => A2 <= "000000" & specialRegCT;
+
+				when "011" => A2 <= specialRegDir;
+				when "100" => A2 <= "000000" & specialRegNT;
+				when "101" => A2 <= "000000" & specialRegCT;
 			     	when others => A2 <= (others => '0');
 			     end case;
 			end if;
 
 			
-			if (ir1_am2 = "01") then
-				if (to_integer(unsigned(IR1_term2)) < 64) then
+			if ir1_am2 = "01" then
+				if to_integer(unsigned(IR1_term2)) < 64 then
 				      B2 <= reg(to_integer(unsigned(IR1_term2(5 downto 0))));
-				else
-					case IR1_term2(2 downto 0) is 
-						when "000" => B2 <= specialRegXYR;
-						when "001" => B2 <= specialRegXYD;
-						when "010" => B2 <= specialRegJoy;
-						when "101" => B2 <= "000000" & specialRegCT;
-						when others => B2 <= (others => '0');
-					end case;
+				else case IR1_term2(2 downto 0) is 
+					when	"000" => B2 <= specialRegXYR;
+					when	"001" => B2 <= specialRegXYD;
+					when	"010" => B2 <= specialRegJoy;
+
+					when 	"011" => B2 <= specialRegDir;
+					when 	"100" => B2 <= "000000" & specialRegNT;
+					when 	"101" => B2 <= "000000" & specialRegCT;
+					when others => B2 <= (others => '0');
+				end case;
 				end if;
 			else 
-				B2 <= ir1_term2;
+				b2 <= ir1_term2;
 			end if;
-
-			playerXYR <= specialRegXYR;			-- Player Y and X position are stored in register 64 and 65.
+			playerXYR <= specialRegXYR;	-- Player Y and X position are stored in register 64 and 65.
 			playerXYD <= specialRegXYD;
-			specialRegJoy <= joystick;			-- We store the joystick value in register 66.
+			specialRegJoy <= joystick;		-- We store the joystick value in register 66.
 
 			if (IR3_op = "0001" or IR3_op = "0011" or IR3_op = "0100" or IR3_op = "0101" or IR3_op = "0110") then
-				if to_integer(unsigned(IR3_fA)) < 64 then
+				if to_integer(unsigned(IR3_fa)) < 64 then
 			     		 reg(to_integer(unsigned(IR3_fA))) <= res;
 				else
-					case IR3_fa(1 downto 0) is
-						when "00" => specialRegXYR <= res;
-						when "01" => specialRegXYD <= res;
-						when others => null;
-					end case;
+					 case IR3_fa(1 downto 0) is
+					when "00" => specialRegXYR <= res;
+					when "01" => specialRegXYD <= res;
+					when others => null;
+				end case;
 				end if; 
 			end if;
 		end if;
@@ -393,8 +469,10 @@ begin
 			end if;
 		end if;
 	END PROCESS;
-	-------- END Program Counter --------
+	-------- END Program Counter ------
 
+
+	tmpB2 <= B2(1 downto 0);
 	--------------- ALU ------------------
 	PROCESS(clk)
 	BEGIN
@@ -402,8 +480,31 @@ begin
 			if (IR2_op = "0001") then	-- Move
 				res <= B2;
 			end if;
+
+			if (IR2_op = "0111") then
+				cmap <=cmap+ 1;
+			end if;
 			
-			specialRegCT <= mapm(to_integer(unsigned(specialRegXYR)));
+			--if (IR2_op = "0010") then  --map editor
+			--	mapm(to_integer(unsigned(IR2_fA))) <= tmpB2;
+			--if (IR2_op = "0111") then   --collision detector
+			--	res(7 downto 2) <= (others => '0');
+			--	res(1 downto 0) <= mapm(to_integer(unsigned(B2)));
+			--end if;
+
+			--if clk = '1' then
+			--	specialRegNT <= mapm(to_integer(unsigned(specialRegXYR)) + to_integer(unsigned(specialRegDir)));
+			--else
+			--	specialRegCT <= mapm(to_integer(unsigned(specialRegXYR)));
+			--end if;
+			--case specialRegJoy(2 downto 0) is
+			--	when "111" => specialRegDir <= "11110000";
+			--	when "101" => specialRegDir <= "00000001";
+			--	when "110" => specialRegDir <= "00010000";
+			--	when "100" => specialRegDir <= "00001111";
+			--	when others => specialRegDir <= (others => '0');
+			--end case;
+			specialRegCT <= mapm(256 * to_integer(unsigned(cmap)) + to_integer(unsigned(specialRegXYR)));
 			if (IR2_op = "0011") then	--Add
 				res <= A2 + B2;
 				if (to_integer(unsigned(A2)) + to_integer(unsigned(B2)) > 256)then 
@@ -416,19 +517,23 @@ begin
 			if (IR2_op = "0100" or IR2_op = "1000") then   -- Sub or Comp; differed by whether register stores value
 				res <= A2 - B2;
 				
-				if (A2 < B2) then 
+				if(A2 < B2) then 
 					n <= '1';
 				else 
 					n <= '0';
 				end if;
 
-				if (A2 = B2) then
+				if(A2 = B2) then
 					z <= '1';
 				else 
 					z <= '0';
 				end if; 
 			end if;
 
+			if (IR2_op = "0101") then   --Mult
+				res <= "00000000"; --A2 * B2;
+			end if;
+			
 			if (IR2_op = "0110") then   -- Shift
 				res(7 downto 4) <= A2(3 downto 0);
 				res(3 downto 0) <= (others => '0');
@@ -441,10 +546,8 @@ begin
 					n <= IR2_am2(0);
 				end if;
 			end if;
-			-- branch, branch on flag, nop and halt does not affect alu
-			
-			tile <= mapm(to_integer(unsigned(mapm_address)));	-- outputs requested tile to pixel selector
+			-- branch, branch on flag, nop and halt does not affect alu	
+			tile <= mapm(to_integer(unsigned(cmap)) * 256 + to_integer(unsigned(mapm_address)));	-- outputs requested tile to pixel selector
 		end if;
 	end PROCESS;
-	
 end behavioral;
