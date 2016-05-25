@@ -1,5 +1,0 @@
-CPU.vhd:
-
-rad 145: fixa mux 1
-
-rad 152: fixa mux 2
