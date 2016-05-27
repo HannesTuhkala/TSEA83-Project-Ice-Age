@@ -48,9 +48,6 @@ architecture behavioral of iceage is
 	signal playerRlink : std_logic_vector(7 downto 0);
 	signal tileLink : std_logic_vector(1 downto 0);
 	signal Buttonlink : std_logic_vector(7 downto 0):="00000000";
-	signal XYBstream : std_logic_vector(3 downto 0):="0000";
-	signal counter : std_logic_vector(5 downto 0) := (others => '0');
-	
 begin
 	Led <= Buttonlink;
 	PROCESS(clk)
