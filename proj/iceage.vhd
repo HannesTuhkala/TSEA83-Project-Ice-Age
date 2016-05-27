@@ -24,7 +24,7 @@ architecture behavioral of iceage is
 			clk : in std_logic;
 			playerXYD: out std_logic_vector(7 downto 0); --TRANSISTION
 			playerXYR: out std_logic_vector(7 downto 0);
-			joystick : in std_logic_vector(7 downto 0);
+			buttons : in std_logic_vector(7 downto 0);
 			mapm_address : in std_logic_vector(7 downto 0);
 			tile : out std_logic_vector(1 downto 0));
 	end component cpu;
@@ -47,32 +47,32 @@ architecture behavioral of iceage is
 	signal playerDlink : std_logic_vector(7 downto 0);
 	signal playerRlink : std_logic_vector(7 downto 0);
 	signal tileLink : std_logic_vector(1 downto 0);
-	signal Joylink : std_logic_vector(7 downto 0):="00000000";
+	signal Buttonlink : std_logic_vector(7 downto 0):="00000000";
 	signal XYBstream : std_logic_vector(3 downto 0):="0000";
 	signal counter : std_logic_vector(5 downto 0) := (others => '0');
 	
 begin
-	Led <= Joylink;
+	Led <= Buttonlink;
 	PROCESS(clk)
 	begin
 		if (rising_edge(clk)) then
 			if btnl='1' then --UP
-				Joylink(2 downto 0) <= "111";
+				Buttonlink(2 downto 0) <= "111";
 			elsif btnr='1' then --DOWN
-				Joylink(2 downto 0) <= "110";
+				Buttonlink(2 downto 0) <= "110";
 			elsif btnu='1' then --RIGHT
-				Joylink(2 downto 0) <= "101";
+				Buttonlink(2 downto 0) <= "101";
 			elsif btnd='1' then -- LEFT
-				Joylink(2 downto 0) <= "100";
+				Buttonlink(2 downto 0) <= "100";
 			elsif btns='1' then -- reset pos
 				joylink(2 downto 0) <= "010";
 			else		-- no button
-				Joylink(2 downto 0) <= "000";
+				Buttonlink(2 downto 0) <= "000";
 			end if;
 		end if;
 	END PROCESS;	
 
-	MAP1 : cpu port map(clk=>clk, joystick=>joylink, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
+	MAP1 : cpu port map(clk=>clk, buttons=>joylink, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
 	MAP2 : VGA_MOTOR port map(clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> playerRlink ,playerCoordDetailed=>playerDlink, tileType=>tileLink);
 
 end behavioral;
