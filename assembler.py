@@ -4,17 +4,13 @@ import sys
 OP_CODES = {
 	"NOP" : 0,
 	"MOVE" : 1,
-	"MAPS" : 2,
 	"ADD" : 3,
 	"SUB" : 4,
-	"MULT" : 5,
 	"SHIFT" : 6,
-	"COL" : 7,
 	"CMP" : 8,
 	"SETF" : 9,
 	"BRF" : 10,
 	"BRA" : 11,
-	"HALT" : 15,
 }
 
 # Different modes and different constants used in code
@@ -35,6 +31,7 @@ labels = {}
 constants = {}
 currentLine = 0
 
+# Assembles the assemblycode to machine code.
 def assemble(filename):
 	global currentLine, lines, outputcode, labels, constants
 
@@ -42,13 +39,16 @@ def assemble(filename):
 	with open(filename) as f:
 		lines = f.readlines()
 
+	# preassembles the file by adding constants and labels to dictionaries and converting hex values to decimal values.
 	lines = preAssemble(lines, labels)
 
+	# puts in all numeric values for labels and constants and converts each instruction to machine code.
 	for line in lines:
 		# Parse current line
 		outputcode[currentLine] = parseLine(line, currentLine, labels)
 		currentLine += 1
 
+	# Outputs the code.
 	printCode(outputcode)
 	print(currentLine)
 
@@ -64,6 +64,7 @@ def preAssemble(lines, labels):
 		words = line.split(" ")
 
 		for key, word in enumerate(words):
+			# Remove comments
 			if word == "--":
 				break;
 			if isLabel(word):
@@ -107,7 +108,7 @@ def parseLine(line, currentLine, labels):
 	opcode = words[0]
 	print (opcode)
 	outputLine += getOP(opcode)
-		
+	
 	if opcode == "NOP" or opcode == "HALT":
 		outputLine += toBinary(0, 26)
 	elif opcode == "MOVE":
@@ -205,4 +206,3 @@ if __name__ == "__main__":
 		sys.exit(-1)
 	
 	assemble(sys.argv[1])
-

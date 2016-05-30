@@ -1,16 +1,12 @@
 ﻿0000 NOP
 0001 MOVE
-0010 mapStore (MAPS)
 0011 ADD
 0100 SUB
-0101 MULT
 0110 SHIFT
-0111 Collision (COL)
 1000 Compare (CMP)
 1001 Set flag - z:n (SETF)
 1010 Branch on Flag - z:n (BRF)
 1011 Branch (BRA)
-1111 HALT
 
 
 31           28 27          26 25           18 17         16  15            8 7              0
@@ -32,10 +28,6 @@ NOP
 Lagrar term2 till register(utaddr).
 MOVE <term2> <utaddr>
 
-0010 mapStore (MAPS)
-Lagra term2 (va) i mapm address reg(utaddr)
-MAPS <mode> <term2> <utaddr>
-
 0011 ADD
 Addera reg(term1) med term2 (va), lagra i reg(utaddr)
 Sätter n = '1' om summan överskrider 255, annars n = '0'.
@@ -46,18 +38,9 @@ Subtrahera reg(term1) med term2 (va), lagra i reg(utaddr)
 Sätter z hög om res = 0, sätter N hög om res < 0, annars negativa
 SUB <term1> <mode> <term2> <utaddr>
 
-0101 MULT
-Multiplicerar reg(term1) med term2 (va), lagra i reg(utaddr)
-MULT <term1> <mode> <term2> <utaddr>
-
 0110 SHIFT
 Shifta reg(term1) vänster med 4 bitar, lagra i reg(utaddr)
 SHIFT <term1> <utaddr>
-
-0111 Collision (COL)
-Tar indata term2 = (4 bitar Y coord.  | 4 bitar X coord)
-	   lagrar mapm(term2) i reg(utaddr)
-COL <term2> <utaddr>
 
 1000 Compare (CMP)
 Fungerar som SUB, men lagrar inget värde i register, använder alltså inte utaddr
@@ -78,7 +61,3 @@ BRF <term1> <Z, N>
 1011 Branch (BRA)
 pc = term1 (direkt addressering) - 128
 BRA <term1>
-
-1111 HALT
-Stop execution -- currently not implemented.
-HALT

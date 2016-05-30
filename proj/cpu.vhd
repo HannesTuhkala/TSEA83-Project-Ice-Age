@@ -2,6 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
+
 entity cpu is
 	port (
 		clk: in std_logic;
@@ -396,13 +397,14 @@ begin
 			if ir1_am2 = "01" then
 				if to_integer(unsigned(IR1_term2)) < 64 then
 				      B2 <= reg(to_integer(unsigned(IR1_term2(5 downto 0))));
-				else case IR1_term2(2 downto 0) is 
-					when "000" => B2 <= specialRegXYR;
-					when "001" => B2 <= specialRegXYD;
-					when "010" => B2 <= specialRegJoy;
-					when "101" => B2 <= "000000" & specialRegCT;
-					when others => B2 <= (others => '0');
-				end case;
+				else
+					case IR1_term2(2 downto 0) is 
+						when "000" => B2 <= specialRegXYR;
+						when "001" => B2 <= specialRegXYD;
+						when "010" => B2 <= specialRegJoy;
+						when "101" => B2 <= "000000" & specialRegCT;
+						when others => B2 <= (others => '0');
+					end case;
 				end if;
 			else 
 				B2 <= ir1_term2;
@@ -415,11 +417,11 @@ begin
 				if to_integer(unsigned(IR3_fA)) < 64 then
 			     		 reg(to_integer(unsigned(IR3_fA))) <= res;
 				else
-					 case IR3_fA(1 downto 0) is
-					when "00" => specialRegXYR <= res;
-					when "01" => specialRegXYD <= res;
-					when others => null;
-				end case;
+					case IR3_fA(1 downto 0) is
+						when "00" => specialRegXYR <= res;
+						when "01" => specialRegXYD <= res;
+						when others => null;
+					end case;
 				end if; 
 			end if;
 		end if;
@@ -460,7 +462,7 @@ begin
 			end if;
 
 			if (IR2_op = "0111") then
-				cmap <=cmap+ 1;
+				cmap <= cmap + 1;
 			end if;
 			
 			specialRegCT <= mapm(256 * to_integer(unsigned(cmap)) + to_integer(unsigned(specialRegXYR)));
