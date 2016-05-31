@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity iceage is
 	port (
-		Led : out std_logic_vector(7 downto 0);
+		Led : out std_logic_vector(7 downto 0); -- used for debugging not mentioned in report 
 		btnu : in std_logic;
 		btnd : in std_logic;
 		btnl : in std_logic;
