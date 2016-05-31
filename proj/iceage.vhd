@@ -43,6 +43,7 @@ architecture behavioral of iceage is
 			tileType : in std_logic_vector(1 downto 0));
 	end component VGA_MOTOR;
 	
+----------------------------------------LINK SIGNALS---------------------------------
 	signal  mapLink: std_logic_vector(7 downto 0); -- mapmlinks with tileslot
 	signal playerDlink : std_logic_vector(7 downto 0);
 	signal playerRlink : std_logic_vector(7 downto 0);
@@ -50,9 +51,10 @@ architecture behavioral of iceage is
 	signal Buttonlink : std_logic_vector(7 downto 0):="00000000";
 begin
 	Led <= Buttonlink;
+-----------------------------------Button-handeler-----------------------------------
 	PROCESS(clk)
 	begin
-		if (rising_edge(clk)) then
+		if (rising_edge(clk)) then	-- when button input is high set LSB 3 bit value to buttonlink output signal
 			if btnl='1' then --UP
 				Buttonlink(2 downto 0) <= "111";
 			elsif btnr='1' then --DOWN
@@ -69,7 +71,10 @@ begin
 		end if;
 	END PROCESS;	
 
+------------------------------------Maps signals between modules-------------------------------------
+
 	MAP1 : cpu port map(clk=>clk, buttons=>Buttonlink, mapm_address => mapLink, playerXYD => playerDlink, playerXYR => playerRlink, tile=>tileLink);
 	MAP2 : VGA_MOTOR port map(clk=>clk,Hsync=>Hsync, Vsync=>Vsync, vgaRed=>vgaRed, vgaGreen => vgaGreen, vgaBlue=>vgaBlue, tileSlot => mapLink, playerCoordRough=> playerRlink ,playerCoordDetailed=>playerDlink, tileType=>tileLink);
 
+-------------------------------------------------------------------------------------
 end behavioral;
