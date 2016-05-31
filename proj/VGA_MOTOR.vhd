@@ -244,22 +244,29 @@ begin
       if (Xpixel < 432 and Ypixel < 368 and Xpixel > 175 and Ypixel > 111) then
 	if	((to_integer(unsigned(playerCoordRough)) = to_integer(Ypixel(7 downto 4) - 7) * 16  + to_integer(Xpixel(7 downto 4) - 11) and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)) ) or
 		 (to_integer(unsigned(playerCoordRough)) + 16 = to_integer(Ypixel(7 downto 4) - 7) * 16 + to_integer(Xpixel(7 downto 4) - 11)	 and to_integer(unsigned(playerCoordDetailed(7 downto 4))) >  to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) <= to_integer(Xpixel(3 downto 0)))) and
-		 (to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and(sprite_mem( 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) ) /= x"ff") then
-
-
-		tilePixel <= sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+		 (to_integer(unsigned(tileType)) /= 3 or to_integer(Ypixel(3 downto 0)) >= 10 ) and(sprite_mem( 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) ) /= x"ff") then 	
+		--Checks first that the pixel is in the same tile as the player, or directly beneath it, and within the bounds of where the 
+		--sprite may be drawn. Also checks that the pixel is not in the upper section of athe goal tile (tile type 3), and that
+		--the the pixel in sprite memory is not full white (our transparency color).
+	
+		tilePixel <= sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) ); --draw pixel from sprite
 
 	elsif (to_integer(unsigned(playerCoordRough)) +  1 = to_integer(Ypixel(7 downto 4) - 7) * 16 + to_integer(Xpixel(7 downto 4) - 11)and to_integer(unsigned(playerCoordDetailed(7 downto 4))) <= to_integer(Ypixel(3 downto 0)) and to_integer(unsigned(playerCoordDetailed(3 downto 0))) >  to_integer(Xpixel(3 downto 0))) and
 		(sprite_mem(16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) + 16 - to_integer(unsigned(playerCoordDetailed))) /= x"ff") then
-		tilePixel <= sprite_mem(16 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) );
+		--Checks if the pixel is in the tile to the immediate right of the player location (PCR is allways in the leftmost of any one 
+		--or two tiles the character is in), and if so does the same as above if-statement except for checking if the pixel is in the
+		--upper part of the goal tile, and with an offset of 16 (since there is a 16-pixel offset from the pc, which would otherwise 
+		--cause the sprite to be drawn with wraparound one pixel down)
+		
+		tilePixel <= sprite_mem(16 + 16 * to_integer(Ypixel(3 downto 0)) + to_integer(Xpixel(3 downto 0)) - to_integer(unsigned(playerCoordDetailed)) ); --draw pixel from sprite, with an offset of 16 (see above comment)
 
 	else
-	    tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
+	    tilePixel <= tileMem((to_integer(unsigned(tileType)) * 256) + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0))); --draw corresponding pixel in corresponding tile
 	end if;
 		elsif (Xpixel < 608 and Ypixel < 480) then
-			tilePixel <= tileMem(256 + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0)));
+			tilePixel <= tileMem(256 + (16 * to_integer(Ypixel(3 downto 0))) + to_integer(Xpixel(3 downto 0))); --draw rocks in the surrounding area; constant 256 corresponds to tile type for rock
 		else
-			tilePixel <= (others => '0');
+			tilePixel <= (others => '0'); --black borders
       end if;
     end if;
   end process;
