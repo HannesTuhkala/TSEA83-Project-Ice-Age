@@ -31,10 +31,6 @@ architecture Behavioral of VGA_MOTOR is
   signal	Ypixel	        : unsigned(15 downto 0);		-- Vertical pixel counter
   signal	ClkDiv	        : unsigned(1 downto 0);		-- Clock divisor, to generate 25 MHz signal
   signal	Clk25		: std_logic;			-- One pulse width 25 MHz signal
-  signal 	comp1		: unsigned(3 downto 0);
-  signal 	comp2		: unsigned(3 downto 0);
-  signal 	comp3		: unsigned(3 downto 0);
-  signal 	comp4		: unsigned(3 downto 0);
 		
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
 	
